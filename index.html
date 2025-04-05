@@ -1,0 +1,30 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>BIBLE DRILLS PRACTICE</title>
+    <script src="phaser.js"></script>
+    <script src="main.js" type="module"></script>
+    <link rel="stylesheet" type="text/css" href="styles.css"/>
+</head>
+<body style="background: black;">
+<script>
+    setTimeout(() => {
+        window.scrollTo(0, 25);
+    }, 500); 
+</script>
+<div id="game-container"></div>
+<div style="height: 30px;"></div>
+<div id="consoleLog"></div>
+<script src="console.js" type="text/javascript"></script>
+<div id="bottomOfPage"></div>
+<button id="clearStorageBtn">Clear Local Storage</button>
+<script>
+    document.getElementById('clearStorageBtn').addEventListener("click", () => {
+        localStorage.clear();
+        console.log('Local storage cleared...');
+        location.reload();
+    });
+</script>
+</body>
+</html>

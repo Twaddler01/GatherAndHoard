@@ -1,5 +1,6 @@
 import Layout from './layout.js'; // Import the Layout class
 import GatherBar from './gatherBar.js';  // Import the GatherBar class
+import ScrollingBox from './scrollingBox.js';
 
 const UI_STYLES = {
     // Box Colors
@@ -31,29 +32,55 @@ class MainScene extends Phaser.Scene {
     }
 
     create() {
-        //this.createUI();
+        this.createUI();
+        //this.add.text(10, 10, "Scene Loaded", { color: "#fff" });
         
         // Create layout
         const layout = new Layout(this);
         layout.createTabs();
-        
-        // Create and add the GatherBar content to the "Gather" tab
-        //const gatherBar = new GatherBar(this, 'Twigs', 40, 100, 5); // Create a gather bar instance
-        //layout.addContent('Gather', gatherBar); // Add the gather bar to the "Gather" tab
-        
-        /*let textTest = this.add.text(0, 0, 'testing 123...', {
-            font: '20px Arial',
-            fill: '#ffffff',
-            backgroundColor: '#000000',
-            padding: { left: 10, right: 10 }
-        });
-        layout.addContent('Gather', textTest);
-        */
+
+// Method for tab content Ypos
+//let yPos = layout.createContentBackground();
+//console.log(yPos);
+
+/*
+const scrollBox = new ScrollingBox(this, 50, 100, 250, 200, "Initial text test123", {
+  bgColor: 0x0000ff,  // Blue background for testing
+  fontFamily: 'Arial',
+  fontSize: '18px',
+  color: '#ffffff'
+});
+*/
+
+
+
+
+
+//layout.addToTabPage('Gather', scrollBox.container);
+
+//const gatherBar = new GatherBar(this, 'Pebbles', 40, 100, 5); // Set y=0 for stacking
+//box.addElement(gatherBar.container);
+
+
+
+/* const gatherBar2 = new GatherBar(this, 'Grass', 40, 0, 5); // Set y=0 for stacking
+layout.addToTabPage('Gather', gatherBar2.container);
+const gatherBar3 = new GatherBar(this, 'Sticks', 40, 0, 5); // Set y=0 for stacking
+layout.addToTabPage('Gather', gatherBar3.container);
+const gatherBar4 = new GatherBar(this, 'Stones', 40, 0, 5); // Set y=0 for stacking
+layout.addToTabPage('Gather', gatherBar4.container);
+const gatherBar5 = new GatherBar(this, 'Brush', 40, 0, 5); // Set y=0 for stacking
+layout.addToTabPage('Gather', gatherBar5.container);
+const gatherBar6 = new GatherBar(this, 'Reeds', 40, 0, 5); // Set y=0 for stacking
+layout.addToTabPage('Gather', gatherBar6.container);
+const gatherBar7 = new GatherBar(this, 'Cattails', 40, 0, 5); // Set y=0 for stacking
+layout.addToTabPage('Gather', gatherBar7.container);
+*/
     }
 
     createUI() {
         // Setting up the main UI components
-        
+
         const width = this.game.config.width;
         const height = this.game.config.height;
 

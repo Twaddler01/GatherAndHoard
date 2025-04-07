@@ -59,16 +59,22 @@ export default class Layout {
         line.strokePath();
     }
 
-    createContentBackground() {
-        // Create a background rectangle for the content area
-        const width = this.scene.sys.game.config.width;
-        const height = this.scene.sys.game.config.height - (this.tabYPosition + this.tabHeight + this.lineThickness);
+createContentBackground() {
+    // Create a background rectangle for the content area
+    const width = this.scene.sys.game.config.width;
+    const height = this.scene.sys.game.config.height - (this.tabYPosition + this.tabHeight + this.lineThickness);
 
-        // Create a gray background covering the content area
-        this.contentBackground = this.scene.add.graphics();
-        this.contentBackground.fillStyle(0x808080, 1); // Gray color
-        this.contentBackground.fillRect(0, this.tabYPosition + this.tabHeight + this.lineThickness, width, height);
-    }
+    // Calculate the Y position for content background
+    const contentBackgroundY = this.tabYPosition + this.tabHeight + this.lineThickness;
+
+    // Create a gray background covering the content area
+    this.contentBackground = this.scene.add.graphics();
+    this.contentBackground.fillStyle(0x808080, 1); // Gray color
+    this.contentBackground.fillRect(0, contentBackgroundY, width, height);
+
+    // Return the Y value for where the content background starts
+    return contentBackgroundY;
+}
 
     createTabPage(label, x, y) {
         // Create a TabPage container to store all content for this tab
@@ -77,8 +83,8 @@ export default class Layout {
 
         // Optionally: You can add default content to the tab here, e.g., text or buttons
         if (label === 'Gather') {
-            const gatherBar = new GatherBar(this.scene, 'Twigs', 40, 100, 5); // Example gather bar
-            page.addContent(gatherBar.container); // Add the gather bar to the "Gather" tab content
+            //const gatherBar = new GatherBar(this.scene, 'Twigs', 40, 100, 5); // Example gather bar
+            //page.addContent(gatherBar.container); // Add the gather bar to the "Gather" tab content
         }
         // Add content for other tabs as needed...
     }
@@ -114,35 +120,97 @@ export default class Layout {
             });
         });
     }
+
+    addToTabPage(tabLabel, content) {
+        const page = this.contentPages[tabLabel];
+        if (!page) return;
+    
+        // Calculate next Y position based on existing content
+        let nextY = 0;
+        for (const obj of page.content) {
+            if (obj.getBounds) {
+                const bounds = obj.getBounds();
+                const bottomY = obj.y + (bounds.height || 0);
+                if (bottomY > nextY) nextY = bottomY + 10; // Add spacing
+            }
+        }
+    
+        // Safely set Y position
+        if (typeof content.y === 'undefined') {
+            content.y = nextY;
+        }
+    
+        // Add to the container
+        page.addContent(content);
+    }
 }
 
 class TabPage {
     constructor(scene, x, y, width, height) {
         this.scene = scene;
-        this.container = this.scene.add.container(x, y); // A container for this tab's content
-        this.container.setSize(width, height); // Set the size of the container
+        this.container = this.scene.add.container(x, y);
+        this.container.setSize(width, height);
 
-        // You can add more objects (buttons, texts, graphics) to this container
-        this.content = []; // To store objects added to the page
+        this.content = [];
+
+        // Create a graphics mask to limit visible area
+        const shape = this.scene.make.graphics({});
+        shape.fillStyle(0xffff00);
+        shape.fillRect(x, y, width, height);
+        const mask = shape.createGeometryMask();
+        this.container.setMask(mask);
+/*
+        // Enable dragging for scrolling
+        this.isDragging = false;
+        this.startY = 0;
+        this.startScrollY = 0;
+
+        // Listen for pointer events for dragging
+        this.scene.input.on('pointerdown', (pointer) => {
+            // Only start dragging if the pointer is inside the visible content area
+            if (this.container.visible && this.container.getBounds().contains(pointer.x, pointer.y)) {
+                this.isDragging = true;
+                this.startY = pointer.y;
+                this.startScrollY = this.container.y;
+            }
+        });
+
+        this.scene.input.on('pointerup', () => {
+            this.isDragging = false;
+        });
+
+        this.scene.input.on('pointermove', (pointer) => {
+            if (this.isDragging) {
+                const delta = pointer.y - this.startY;
+                // Move container but clamp its position to avoid scrolling past the top or bottom
+                this.container.y = Phaser.Math.Clamp(this.startScrollY + delta, this.minScrollY(), this.maxScrollY());
+            }
+        });*/
     }
 
-    // Method to add content to this tab's page
+    // Bottom limit - the content can't scroll further than its height minus the container height
+    minScrollY() {
+        return this.scene.sys.game.config.height - this.container.height;
+    }
+
+    // Top limit - adjust this value to change how much content shows at the top
+    maxScrollY() {
+        return 0; // No content should scroll past the top
+    }
+
     addContent(object) {
         this.container.add(object);
         this.content.push(object);
     }
 
-    // Method to show this tab's content (set the container visible)
     show() {
         this.container.setVisible(true);
     }
 
-    // Method to hide this tab's content (set the container invisible)
     hide() {
         this.container.setVisible(false);
     }
 
-    // Method to clear all content (e.g., remove graphics)
     clearContent() {
         this.container.removeAll();
         this.content = [];

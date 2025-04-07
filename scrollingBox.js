@@ -18,9 +18,10 @@ export default class ScrollingBox {
     this.container.add(this.background);
 
     // Create a mask (geometry mask aligned with the container)
-    const shape = scene.make.graphics({ x: x, y: y, add: false });
+    // Tweaked for use with tabs
+    const shape = scene.make.graphics({ x: x, y: y + 45, add: false });
     shape.fillStyle(0xffffff);
-    shape.fillRect(0, 0, width, height);
+    shape.fillRect(0, 0, width, height - 5);
     this.mask = shape.createGeometryMask();
 
     // Text
@@ -33,7 +34,7 @@ export default class ScrollingBox {
     this.container.add(this.textObject);
 
     // Invisible filler text (dummy text to fill space)
-    const dummyText = "\n".repeat(50); // Adjust repeat count for space
+    const dummyText = "text text text\n".repeat(50); // Adjust repeat count for space
     this.invisibleText = scene.add.text(5, 5, dummyText, {
       fontFamily: config.fontFamily || 'Arial',
       fontSize: config.fontSize || '16px',

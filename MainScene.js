@@ -43,20 +43,16 @@ class MainScene extends Phaser.Scene {
 //let yPos = layout.createContentBackground();
 //console.log(yPos);
 
-/*
-const scrollBox = new ScrollingBox(this, 50, 100, 250, 200, "Initial text test123", {
+const scrollBox = new ScrollingBox(this, 0, 0, this.scale.width, this.scale.height, "Initial text test123", {
   bgColor: 0x0000ff,  // Blue background for testing
   fontFamily: 'Arial',
   fontSize: '18px',
   color: '#ffffff'
 });
-*/
 
 
+layout.addToTabPage('Gather', scrollBox.container);
 
-
-
-//layout.addToTabPage('Gather', scrollBox.container);
 
 //const gatherBar = new GatherBar(this, 'Pebbles', 40, 100, 5); // Set y=0 for stacking
 //box.addElement(gatherBar.container);

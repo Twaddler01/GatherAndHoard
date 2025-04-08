@@ -32,9 +32,8 @@ class MainScene extends Phaser.Scene {
     }
 
     create() {
-        this.createUI();
-        //this.add.text(10, 10, "Scene Loaded", { color: "#fff" });
-        
+        //this.createUI();
+
         // Create layout
         const layout = new Layout(this);
         layout.createTabs();
@@ -43,35 +42,36 @@ class MainScene extends Phaser.Scene {
 //let yPos = layout.createContentBackground();
 //console.log(yPos);
 
-const scrollBox = new ScrollingBox(this, 0, 0, this.scale.width, this.scale.height, "Initial text test123", {
-  bgColor: 0x0000ff,  // Blue background for testing
+const textBox = this.add.text(5, 5, 'TITLE', {});
+layout.addToTabPage('Gather', textBox);
+
+// Offset by 40 for text title above
+const scrollBox = new ScrollingBox(this, 0, 40, this.scale.width, this.scale.height, "", {
+  bgColor: 0x000000,  // Dark gray background for testing
   fontFamily: 'Arial',
   fontSize: '18px',
   color: '#ffffff'
 });
 
+// WIP scrollBox needs to modify 'repeat' based on height of added objects
+//    const dummyText = "text text text\n".repeat(50); // Adjust repeat count for space
 
+// Add to entire tab + 40
 layout.addToTabPage('Gather', scrollBox.container);
 
+// Next is added below other items
+const gatherBar = new GatherBar(this, 'Pebbles', 40, 100, 5); // Set y=0 for stacking
+scrollBox.addElement(gatherBar.container);
 
-//const gatherBar = new GatherBar(this, 'Pebbles', 40, 100, 5); // Set y=0 for stacking
-//box.addElement(gatherBar.container);
+// Adds below gatherBar
+const gatherBar2 = new GatherBar(this, 'Grass', 40, 100, 5); // Set y=0 for stacking
+scrollBox.addElement(gatherBar2.container);
 
 
 
-/* const gatherBar2 = new GatherBar(this, 'Grass', 40, 0, 5); // Set y=0 for stacking
-layout.addToTabPage('Gather', gatherBar2.container);
-const gatherBar3 = new GatherBar(this, 'Sticks', 40, 0, 5); // Set y=0 for stacking
-layout.addToTabPage('Gather', gatherBar3.container);
-const gatherBar4 = new GatherBar(this, 'Stones', 40, 0, 5); // Set y=0 for stacking
-layout.addToTabPage('Gather', gatherBar4.container);
-const gatherBar5 = new GatherBar(this, 'Brush', 40, 0, 5); // Set y=0 for stacking
-layout.addToTabPage('Gather', gatherBar5.container);
-const gatherBar6 = new GatherBar(this, 'Reeds', 40, 0, 5); // Set y=0 for stacking
-layout.addToTabPage('Gather', gatherBar6.container);
-const gatherBar7 = new GatherBar(this, 'Cattails', 40, 0, 5); // Set y=0 for stacking
-layout.addToTabPage('Gather', gatherBar7.container);
-*/
+
+
+
     }
 
     createUI() {

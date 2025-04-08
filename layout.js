@@ -59,22 +59,22 @@ export default class Layout {
         line.strokePath();
     }
 
-createContentBackground() {
-    // Create a background rectangle for the content area
-    const width = this.scene.sys.game.config.width;
-    const height = this.scene.sys.game.config.height - (this.tabYPosition + this.tabHeight + this.lineThickness);
-
-    // Calculate the Y position for content background
-    const contentBackgroundY = this.tabYPosition + this.tabHeight + this.lineThickness;
-
-    // Create a gray background covering the content area
-    this.contentBackground = this.scene.add.graphics();
-    this.contentBackground.fillStyle(0x808080, 1); // Gray color
-    this.contentBackground.fillRect(0, contentBackgroundY, width, height);
-
-    // Return the Y value for where the content background starts
-    return contentBackgroundY;
-}
+    createContentBackground() {
+        // Create a background rectangle for the content area
+        const width = this.scene.sys.game.config.width;
+        const height = this.scene.sys.game.config.height - (this.tabYPosition + this.tabHeight + this.lineThickness);
+    
+        // Calculate the Y position for content background
+        const contentBackgroundY = this.tabYPosition + this.tabHeight + this.lineThickness;
+    
+        // Create a gray background covering the content area
+        this.contentBackground = this.scene.add.graphics();
+        this.contentBackground.fillStyle(0x808080, 1); // Gray color
+        this.contentBackground.fillRect(0, contentBackgroundY, width, height);
+    
+        // Return the Y value for where the content background starts
+        return contentBackgroundY;
+    }
 
     createTabPage(label, x, y) {
         // Create a TabPage container to store all content for this tab
@@ -159,33 +159,7 @@ class TabPage {
         shape.fillRect(x, y, width, height);
         const mask = shape.createGeometryMask();
         this.container.setMask(mask);
-/*
-        // Enable dragging for scrolling
-        this.isDragging = false;
-        this.startY = 0;
-        this.startScrollY = 0;
 
-        // Listen for pointer events for dragging
-        this.scene.input.on('pointerdown', (pointer) => {
-            // Only start dragging if the pointer is inside the visible content area
-            if (this.container.visible && this.container.getBounds().contains(pointer.x, pointer.y)) {
-                this.isDragging = true;
-                this.startY = pointer.y;
-                this.startScrollY = this.container.y;
-            }
-        });
-
-        this.scene.input.on('pointerup', () => {
-            this.isDragging = false;
-        });
-
-        this.scene.input.on('pointermove', (pointer) => {
-            if (this.isDragging) {
-                const delta = pointer.y - this.startY;
-                // Move container but clamp its position to avoid scrolling past the top or bottom
-                this.container.y = Phaser.Math.Clamp(this.startScrollY + delta, this.minScrollY(), this.maxScrollY());
-            }
-        });*/
     }
 
     // Bottom limit - the content can't scroll further than its height minus the container height

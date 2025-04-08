@@ -8,6 +8,9 @@ export default class ScrollingBox {
     this.scrollY = 0;
     this.children = [];
 
+    // For stacking
+    this.stackY = 0; // current stack offset
+
     // Create a container to group everything
     this.container = scene.add.container(x, y); // Adding the container at the x, y position
 
@@ -33,6 +36,9 @@ export default class ScrollingBox {
     }).setOrigin(0, 0).setMask(this.mask);
     this.container.add(this.textObject);
 
+    // Start stacking after text + some padding
+    this.currentY = this.textObject.y + this.textObject.height + 10;
+
     // Invisible filler text (dummy text to fill space)
     const dummyText = "text text text\n".repeat(50); // Adjust repeat count for space
     this.invisibleText = scene.add.text(5, 5, dummyText, {
@@ -40,12 +46,14 @@ export default class ScrollingBox {
       fontSize: config.fontSize || '16px',
       color: config.color || '#ffffff',
       wordWrap: { width: width - 10 }
-    }).setOrigin(0, 0).setMask(this.mask).setVisible(true); // Invisible text (hidden but still takes space)
+    }).setOrigin(0, 0).setMask(this.mask).setVisible(false); // Invisible text (hidden but still takes space)
     this.container.add(this.invisibleText);
 
     this.children.push(this.textObject);
     this.children.push(this.invisibleText); // Add the invisible text as a filler
-    this.totalHeight = this.textObject.height + this.invisibleText.height; // Adjust total height including filler
+
+// Unsure of 35 value
+    this.totalHeight = this.invisibleText.height + 35 + this.y; // Adjust total height including filler
 
     // Scrollbar Track (relative to container)
     this.scrollBarTrack = scene.add.graphics();
@@ -57,7 +65,7 @@ export default class ScrollingBox {
     this.scrollBarThumb = scene.add.graphics();
     this.scrollBarThumb.fillStyle(0xffffff, 1); // White for the thumb
     this.thumbHeight = Math.max((height / this.totalHeight) * height, 20); // Ensure thumb is at least 20px tall
-    this.scrollBarThumb.fillRect(width - 10, 0, 10, this.thumbHeight); // Positioned relative to the container's x, y
+    this.scrollBarThumb.fillRect(width - 10, 0, 10, this.thumbHeight - 35 - this.y - 10); // Positioned relative to the container's x, y
     this.container.add(this.scrollBarThumb);
 
     // Touch scroll
@@ -109,11 +117,25 @@ export default class ScrollingBox {
     this.scrollBarThumb.y = scrollRatio * maxThumbY;
   }
 
-  addElement(gameObject) {
-    gameObject.setMask(this.mask);
-    this.children.push(gameObject);
-    return gameObject;
-  }
+    addElement(gameObject, { spacing = 60, startY = 50 } = {}) {
+      // Add the element to the container
+      this.container.add(gameObject);
+      this.children.push(gameObject);
+    
+      // Set the position for the new element
+      gameObject.y = this.stackY + startY;
+    
+      // Update total height after adding the new element
+      //this.totalHeight = Math.max(this.totalHeight, gameObject.y + gameObject.height);  // Ensure totalHeight is always updated
+    
+      // Advance stackY for the next element
+      this.stackY += spacing;
+    
+      // Apply the mask to the new element
+      gameObject.setMask(this.mask);
+
+      return gameObject;
+    }
 
   setText(content) {
     this.textObject.setText(content);

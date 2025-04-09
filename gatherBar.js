@@ -52,8 +52,26 @@ export default class GatherBar extends Phaser.GameObjects.Graphics {
         // Draw the bar when it is created
         this.drawBar();
 
+        // Upgrade
+        this.showUpgrade();
+        
         // Add this container to the scene
         this.scene.add.existing(this.container);
+    }
+
+    //// Upgrade
+    showUpgrade() {
+        this.upgradeIconLocked = true; // Lock state until unlocked
+
+        this.upgradeIcon = this.scene.add.image(this.container.width + 280, this.container.width + 15, 'upgradeIcon')
+            .setScale(0.0615) // Resize to 50x50
+            .setOrigin(0) // Optional: top-left origin
+            .setTint(0x808080) // Gray tint
+            .setOrigin(0.5);
+        this.container.add(this.upgradeIcon); // Add the button to the container
+
+//this.upgradeIcon.clearTint(); // Restores full color
+
     }
 
     drawBar() {
@@ -68,6 +86,52 @@ export default class GatherBar extends Phaser.GameObjects.Graphics {
         const fillWidth = (this.width * this.remainingPoints) / this.totalPoints;
         this.bar.fillStyle(this.fillColor, 1);
         this.bar.fillRect(50, 0, fillWidth, this.height);
+    }
+
+    checkUpgradeAvailability() {
+        if (gatherCounts[this.counterKey] >= 5 && this.upgradeIconLocked) {
+            if (this.totalPoints <= 1) {
+                return;
+            }
+            
+            this.upgradeIconLocked = false;
+    
+            // Remove tint to show it's active
+            this.upgradeIcon.clearTint();
+    
+            // Add pulsing effect
+            this.upgradeTween = this.scene.tweens.add({
+                targets: this.upgradeIcon,
+                scale: { from: 0.0615, to: 0.07 },
+                duration: 500,
+                yoyo: true,
+                repeat: -1,
+                ease: 'Sine.easeInOut'
+            });
+    
+            // Make it interactive
+            this.upgradeIcon.setInteractive().on('pointerdown', () => {
+                console.log('Upgrade clicked!');
+                // Remove tween 
+                if (this.upgradeTween) {
+                    this.upgradeTween.stop();
+                    this.upgradeTween.destroy();
+                    this.upgradeTween = null;
+                }                
+                this.upgradeIcon.setTint(0x808080);
+                gatherCounts[this.counterKey] -= 5;
+                this.gatheredText.setText(gatherCounts[this.counterKey]);
+
+                // Apply upgrade
+                this.totalPoints -= 1;
+                
+                this.upgradeIcon.destroy();
+                this.showUpgrade();
+                
+                this.checkUpgradeAvailability();
+            });
+
+        }
     }
 
     onTap() {
@@ -89,6 +153,10 @@ export default class GatherBar extends Phaser.GameObjects.Graphics {
                 // Start over
                 this.remainingPoints = this.totalPoints;
                 this.drawBar();
+                
+                // Check if upgrade should be unlocked
+                this.checkUpgradeAvailability();
+
             }
         }
     }

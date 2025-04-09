@@ -4,6 +4,7 @@ export default class GatherBar extends Phaser.GameObjects.Graphics {
     constructor(scene, title, x, y, points) {
         super(scene, title, { x, y });
 
+        this.x = x;
         this.title = title;
         this.scene = scene;
         this.totalPoints = points; // Total points
@@ -25,7 +26,7 @@ export default class GatherBar extends Phaser.GameObjects.Graphics {
             font: '20px Arial',
             padding: { left: 10, right: 10 }
         });
-        
+
         // Create counter text
         this.gatheredText = this.scene.add.text(x + 120, this.height / 2 - 40, '0', {
             font: '20px Arial',
@@ -89,11 +90,20 @@ export default class GatherBar extends Phaser.GameObjects.Graphics {
     }
 
     checkUpgradeAvailability() {
-        if (gatherCounts[this.counterKey] >= 5 && this.upgradeIconLocked) {
-            if (this.totalPoints <= 1) {
-                return;
-            }
-            
+        // HP upgrade (5)
+        if (gatherCounts[this.counterKey] >= 5 && this.upgradeIconLocked && this.totalPoints > 1) {
+            this.activatedUpgradeIcon(1);
+        }
+        
+        // Auto-gather upgrade (20)
+        if (gatherCounts[this.counterKey] >= 20 && this.upgradeIconLocked && this.totalPoints <= 1) {
+            this.activatedUpgradeIcon(2);
+        }
+
+    }
+
+    activatedUpgradeIcon(type) {
+
             this.upgradeIconLocked = false;
     
             // Remove tint to show it's active
@@ -119,19 +129,47 @@ export default class GatherBar extends Phaser.GameObjects.Graphics {
                     this.upgradeTween = null;
                 }                
                 this.upgradeIcon.setTint(0x808080);
-                gatherCounts[this.counterKey] -= 5;
-                this.gatheredText.setText(gatherCounts[this.counterKey]);
+                
+                if (type === 1) {
+                    // Upgrade action
+                    this.totalPoints -= 1;
+                    
+                    gatherCounts[this.counterKey] -= 5;
+                    this.gatheredText.setText(gatherCounts[this.counterKey]);
+                }
+if (type === 2) {
+    // Upgrade action
+    gatherCounts[this.counterKey] -= 20;
+    this.gatheredText.setText(gatherCounts[this.counterKey]);
 
-                // Apply upgrade
-                this.totalPoints -= 1;
+    // Create the autoText display
+    if (!this.autoText) {
+        this.autoText = this.scene.add.text(this.x, this.height / 2 - 40 + 30, 'Auto: 1/sec', {
+            font: '20px Arial',
+            padding: { left: 10, right: 10 }
+        });
+        this.container.add(this.autoText);
+    }
+    // Start auto-gathering if not already started
+    if (!this.autoGatherInterval) {
+        this.autoGatherInterval = this.scene.time.addEvent({
+            delay: 1000,
+            callback: () => {
+                gatherCounts[this.counterKey] += 1;
+                this.gatheredText.setText(gatherCounts[this.counterKey]);
+            },
+            callbackScope: this,
+            loop: true
+        });
+    }
+}
                 
                 this.upgradeIcon.destroy();
                 this.showUpgrade();
                 
-                this.checkUpgradeAvailability();
+                this.checkUpgradeAvailability()
             });
 
-        }
     }
 
     onTap() {
@@ -142,17 +180,16 @@ export default class GatherBar extends Phaser.GameObjects.Graphics {
 
             // If the bar reaches 0, log the collection of a Twig
             if (this.remainingPoints === 0) {
-                //console.log("You gathered a Twig!");
-                // Optionally, handle your inventory update here
-                // For example, increment twig count:
-                // this.scene.inventory.addTwig();
 
                 gatherCounts[this.counterKey]++;
                 this.gatheredText.setText(gatherCounts[this.counterKey]);
 
-                // Start over
                 this.remainingPoints = this.totalPoints;
-                this.drawBar();
+
+                if (this.totalPoints > 1) {
+                    // Start over
+                    this.drawBar();
+                }
                 
                 // Check if upgrade should be unlocked
                 this.checkUpgradeAvailability();

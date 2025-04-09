@@ -1,3 +1,5 @@
+import { gatherCounts } from './MainScene.js';
+
 export default class GatherBar extends Phaser.GameObjects.Graphics {
     constructor(scene, title, x, y, points) {
         super(scene, title, { x, y });
@@ -12,13 +14,24 @@ export default class GatherBar extends Phaser.GameObjects.Graphics {
         this.fillColor = 0x00FF00; // Fill color (green)
         this.buttonSpacing = 10; // Spacing between the bar and the button
 
+        // Variables
+        gatherCounts[title] = 0;
+        this.counterKey = title;
+
         // Create a container to hold both the bar and the button
         this.container = this.scene.add.container(x, y); // Position of the container
 
-        this.title = this.scene.add.text(x, this.height / 2 - 40, title, {
+        this.title = this.scene.add.text(x, this.height / 2 - 40, title + ': ', {
             font: '20px Arial',
             padding: { left: 10, right: 10 }
         });
+        
+        // Create counter text
+        this.gatheredText = this.scene.add.text(x + 120, this.height / 2 - 40, '0', {
+            font: '20px Arial',
+            padding: { left: 10, right: 10 }
+        });
+        this.container.add(this.gatheredText);
 
         // Create the gather button (to the left of the bar)
         this.gatherButton = this.scene.add.text(-35, this.height / 2 - 10, 'Gather', {
@@ -69,7 +82,10 @@ export default class GatherBar extends Phaser.GameObjects.Graphics {
                 // Optionally, handle your inventory update here
                 // For example, increment twig count:
                 // this.scene.inventory.addTwig();
-                
+
+                gatherCounts[this.counterKey]++;
+                this.gatheredText.setText(gatherCounts[this.counterKey]);
+
                 // Start over
                 this.remainingPoints = this.totalPoints;
                 this.drawBar();

@@ -2,6 +2,8 @@ import Layout from './layout.js'; // Import the Layout class
 import GatherBar from './gatherBar.js';  // Import the GatherBar class
 import ScrollingBox from './scrollingBox.js';
 
+export const gatherCounts = {};
+
 const UI_STYLES = {
     // Box Colors
     topBoxColor: 0x2c3e50,
@@ -67,6 +69,8 @@ scrollBox.addElement(gatherBar.container);
 const gatherBar2 = new GatherBar(this, 'Grass', 40, 100, 5); // Set y=0 for stacking
 scrollBox.addElement(gatherBar2.container);
 
+const textBox2 = this.add.text(5, 5, 'UPGRADE', {});
+layout.addToTabPage('Upgrade', textBox2);
 
 
 

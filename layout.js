@@ -14,24 +14,26 @@ export default class Layout {
     createTabs() {
         // Create tabs container
         this.tabsContainer = this.scene.add.container(0, this.tabYPosition);
+    
+        // Define all tab labels in one place
+        this.tabLabels = ['Gather', 'Upgrade', 'Tab 3']; 
 
-        // Create the tabs (you can add more as needed)
-        this.createTab('Gather', 0, 0);
-        this.createTab('Tab 2', 80, 0);
-        this.createTab('Tab 3', 160, 0);
-
-        // Draw a line below the tabs to separate them from the content
+        this.tabLabels.forEach((label, index) => {
+            const x = index * 80; // Spacing
+            const y = 0;
+            this.createTab(label, x, y);
+        });
+    
+        // Draw separator and background
         this.createTabLine();
-
-        // Create a background rectangle for the content area
         this.createContentBackground();
 
-        // Create the content containers for each tab
-        this.createTabPage('Gather', 0, this.tabYPosition + this.tabHeight + this.lineThickness);
-        this.createTabPage('Tab 2', 0, this.tabYPosition + this.tabHeight + this.lineThickness);
-        this.createTabPage('Tab 3', 0, this.tabYPosition + this.tabHeight + this.lineThickness);
+        this.tabLabels.forEach((label, index) => {
+            // Create the content container for each tab at the same time
+            this.createTabPage(label, 0, this.tabYPosition + this.tabHeight + this.lineThickness);
+        });
 
-        // Set Tab 1 as the active tab initially
+        // Activate the first tab
         this.setActiveTab(0);
     }
 
@@ -91,15 +93,14 @@ export default class Layout {
 
     onTabClicked(tabLabel) {
         // Handle tab click and show corresponding content
-        const index = ['Gather', 'Tab 2', 'Tab 3'].indexOf(tabLabel);
+        const index = this.tabLabels.indexOf(tabLabel);
         if (index !== -1) {
             this.setActiveTab(index);
         }
     }
 
     setActiveTab(index) {
-        const tabLabels = ['Gather', 'Tab 2', 'Tab 3'];
-        const selectedTabLabel = tabLabels[index];
+        const selectedTabLabel = this.tabLabels[index];
 
         // Hide all content and show only the selected tab content
         Object.keys(this.contentPages).forEach((label) => {

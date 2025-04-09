@@ -117,25 +117,25 @@ export default class ScrollingBox {
     this.scrollBarThumb.y = scrollRatio * maxThumbY;
   }
 
-    addElement(gameObject, { spacing = 60, startY = 50 } = {}) {
-      // Add the element to the container
-      this.container.add(gameObject);
-      this.children.push(gameObject);
+  addElement(gameObject, { spacing = 60, startY = 50 } = {}) {
+    // Add the element to the container
+    this.container.add(gameObject);
+    this.children.push(gameObject);
     
-      // Set the position for the new element
-      gameObject.y = this.stackY + startY;
+    // Set the position for the new element
+    gameObject.y = this.stackY + startY;
     
-      // Update total height after adding the new element
-      //this.totalHeight = Math.max(this.totalHeight, gameObject.y + gameObject.height);  // Ensure totalHeight is always updated
+    // Update total height after adding the new element
+    //this.totalHeight = Math.max(this.totalHeight, gameObject.y + gameObject.height);  // Ensure totalHeight is always updated
     
-      // Advance stackY for the next element
-      this.stackY += spacing;
+    // Advance stackY for the next element
+    this.stackY += spacing;
     
-      // Apply the mask to the new element
-      gameObject.setMask(this.mask);
+    // Apply the mask to the new element
+    gameObject.setMask(this.mask);
 
-      return gameObject;
-    }
+    return gameObject;
+  }
 
   setText(content) {
     this.textObject.setText(content);

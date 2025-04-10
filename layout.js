@@ -12,33 +12,39 @@ export default class Layout {
     }
 
     createTabs() {
-        // Create tabs container
         this.tabsContainer = this.scene.add.container(0, this.tabYPosition);
+        this.tabs = [];
     
-        // Define all tab labels in one place
-        this.tabLabels = ['Gather', 'Upgrade', 'Tab 3']; 
-
+        this.tabLabels = ['Gather', 'Upgrade', 'Tab 3'];
+    
+        let currentX = 0;
+    
         this.tabLabels.forEach((label, index) => {
-            const x = index * 80; // Spacing
-            const y = 0;
-            this.createTab(label, x, y);
+            // Measure text width by creating a temporary Text object
+            const tempText = this.scene.add.text(0, 0, label, {
+                font: '20px Arial'
+            }).setVisible(false); // hide it
+    
+            const textWidth = tempText.width;
+            const totalWidth = textWidth + 20; // 10px padding on each side
+    
+            tempText.destroy(); // cleanup
+    
+            this.createTab(label, currentX, 0, totalWidth);
+            currentX += totalWidth;
         });
     
-        // Draw separator and background
         this.createTabLine();
         this.createContentBackground();
-
+    
         this.tabLabels.forEach((label, index) => {
-            // Create the content container for each tab at the same time
             this.createTabPage(label, 0, this.tabYPosition + this.tabHeight + this.lineThickness);
         });
-
-        // Activate the first tab
+    
         this.setActiveTab(0);
     }
-
-    createTab(label, x, y) {
-        // Create a tab button (basic text-based for now)
+    
+    createTab(label, x, y, width) {
         const tab = this.scene.add.text(x, y, label, {
             font: '20px Arial',
             fill: '#ffffff',
@@ -47,8 +53,12 @@ export default class Layout {
         })
         .setInteractive()
         .on('pointerdown', () => this.onTabClicked(label));
-
+    
+        // Optional: fix height or align/center if needed
+        tab.displayWidth = width;
+    
         this.tabsContainer.add(tab);
+        this.tabs.push(tab);
     }
 
     createTabLine() {

@@ -125,9 +125,6 @@ export default class ScrollingBox {
     // Set the position for the new element
     gameObject.y = this.stackY + startY;
     
-    // Update total height after adding the new element
-    //this.totalHeight = Math.max(this.totalHeight, gameObject.y + gameObject.height);  // Ensure totalHeight is always updated
-    
     // Advance stackY for the next element
     this.stackY += spacing;
     
@@ -136,6 +133,43 @@ export default class ScrollingBox {
 
     return gameObject;
   }
+
+    removeElement(gameObject, { spacing = 60, startY = 50 } = {}) {
+      // Remove from container and children list
+      this.container.remove(gameObject, true); // true = destroy from scene
+      const index = this.children.indexOf(gameObject);
+      if (index !== -1) this.children.splice(index, 1);
+    
+      // Reset stacking position
+      this.stackY = 0;
+    
+      // Filter for all elements that were added with addElement
+      const stackable = this.children.filter(child => child !== this.textObject && child !== this.invisibleText);
+    
+      // Realign each
+      for (const child of stackable) {
+        child.y = this.stackY + startY;
+        this.stackY += spacing;
+      }
+    }
+    
+    replaceElement(gameObject, newGameObject) {
+      // Find original Y before removing
+      const oldY = gameObject.y;
+    
+      // Remove the old one from container and children
+      this.container.remove(gameObject, true);
+      const index = this.children.indexOf(gameObject);
+      if (index !== -1) this.children.splice(index, 1);
+    
+      // Add the new one in the same position
+      newGameObject.y = oldY;
+      this.container.add(newGameObject);
+      this.children.push(newGameObject);
+      newGameObject.setMask(this.mask);
+    
+      return newGameObject;
+    }
 
   setText(content) {
     this.textObject.setText(content);

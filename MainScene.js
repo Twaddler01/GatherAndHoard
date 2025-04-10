@@ -1,8 +1,30 @@
 import Layout from './layout.js'; // Import the Layout class
 import GatherBar from './gatherBar.js';  // Import the GatherBar class
 import ScrollingBox from './scrollingBox.js';
+import ShowUpgradeOpts from './showUpgradeOpts.js';
 
 export const gatherCounts = {};
+
+export const upgradeData = [
+    {
+        req_id: 'Pebbles',
+        req_cnt: 1000,
+        from: 'Pebbles',
+        to: 'Rocks',
+        desc: 'Much larger than tiny pebbles.',
+    },
+    {
+        req_id: 'Rocks',
+        req_cnt: 1000,
+        from: 'Rocks',
+        to: 'Stones',
+        desc: 'Solid and heavy.',
+    }
+];
+
+upgradeData.forEach(upgrade => {
+    upgrade.id = upgrade.from + '_to_' + upgrade.to;
+});
 
 const UI_STYLES = {
     // Box Colors
@@ -41,42 +63,56 @@ class MainScene extends Phaser.Scene {
         const layout = new Layout(this);
         layout.createTabs();
 
-// Method for tab content Ypos
-//let yPos = layout.createContentBackground();
-//console.log(yPos);
+        // Method for tab content Ypos
+        //let yPos = layout.createContentBackground();
+        //console.log(yPos);
+        
+        const textBox = this.add.text(5, 5, 'TITLE', {});
+        layout.addToTabPage('Gather', textBox);
+        
+        // Offset by 40 for text title above
+        this.scrollBox = new ScrollingBox(this, 0, 40, this.scale.width, this.scale.height, "", {
+          bgColor: 0x000000,  // Dark gray background for testing
+          fontFamily: 'Arial',
+          fontSize: '18px',
+          color: '#ffffff'
+        });
+        
+        // WIP scrollBox needs to modify 'repeat' based on height of added objects
+        //    const dummyText = "text text text\n".repeat(50); // Adjust repeat count for space
+        
+        // Add to entire tab + 40
+        layout.addToTabPage('Gather', this.scrollBox.container);
+        
+        // Next is added below other items
+        this.gatherBar = new GatherBar(this, 'Pebbles', 40, 100, 5); // Set y=0 for stacking
+        this.scrollBox.addElement(this.gatherBar.container);
+        
+        // Adds below gatherBar
+        this.gatherBar2 = new GatherBar(this, 'Twigs', 40, 100, 5); // Set y=0 for stacking
+        this.scrollBox.addElement(this.gatherBar2.container);
+        
+        this.gatherBar3 = new GatherBar(this, 'Leaves', 40, 100, 5); // Set y=0 for stacking
+        this.scrollBox.addElement(this.gatherBar3.container);
 
-const textBox = this.add.text(5, 5, 'TITLE', {});
-layout.addToTabPage('Gather', textBox);
+        // Store references
+        this.upgradeBars = {
+            Pebbles: this.gatherBar.container,   // `container` from ScrollingBox
+            Twigs: this.gatherBar2.container,
+            Leaves: this.gatherBar3.container,
+        };
 
-// Offset by 40 for text title above
-const scrollBox = new ScrollingBox(this, 0, 40, this.scale.width, this.scale.height, "", {
-  bgColor: 0x000000,  // Dark gray background for testing
-  fontFamily: 'Arial',
-  fontSize: '18px',
-  color: '#ffffff'
-});
+        this.upgrade = new ShowUpgradeOpts(this, 0, 0);
+        layout.addToTabPage('Upgrade', this.upgrade.container);
+        
+        // tests
+        //const NEWgatherBar = new GatherBar(this, 'NEW TEST', 40, 100, 5); // Set y=0 for stacking
+        //this.scrollBox.replaceElement(gatherBar2.container, NEWgatherBar.container);
 
-// WIP scrollBox needs to modify 'repeat' based on height of added objects
-//    const dummyText = "text text text\n".repeat(50); // Adjust repeat count for space
-
-// Add to entire tab + 40
-layout.addToTabPage('Gather', scrollBox.container);
-
-// Next is added below other items
-const gatherBar = new GatherBar(this, 'Pebbles', 40, 100, 5); // Set y=0 for stacking
-scrollBox.addElement(gatherBar.container);
-
-// Adds below gatherBar
-const gatherBar2 = new GatherBar(this, 'Grass', 40, 100, 5); // Set y=0 for stacking
-scrollBox.addElement(gatherBar2.container);
-
-const textBox2 = this.add.text(5, 5, 'UPGRADE', {});
-layout.addToTabPage('Upgrade', textBox2);
-
-
-
-
-
+        //this.scrollBox.removeElement(gatherBar2.container);
+        
+        //const textBox2 = this.add.text(5, 5, 'UPGRADE', {});
+        //layout.addToTabPage('Upgrade', textBox2);
     }
 
     createUI() {

@@ -1,4 +1,4 @@
-import { gatherCounts } from './MainScene.js';
+import { gatherCounts, upgradeData } from './MainScene.js';
 
 export default class GatherBar extends Phaser.GameObjects.Graphics {
     constructor(scene, title, x, y, points) {
@@ -98,80 +98,93 @@ export default class GatherBar extends Phaser.GameObjects.Graphics {
             this.activatedUpgradeIcon(2);
         }
 
+        // Upgrade tab availability
+        upgradeData.forEach(upg => {
+            const id = `${upg.from}_to_${upg.to}`;
+            const upgradeBtn = this.scene.upgrade.getUpgradeButton(id);
+            const currentCount = gatherCounts[upg.req_id] || 0;
+        
+            if (upgradeBtn) {
+                if (currentCount >= upg.req_cnt) {
+                    upgradeBtn.setBackgroundColor('#2ecc71'); // green
+                } else {
+                    upgradeBtn.setBackgroundColor('#333'); // default
+                }
+            }
+        });
     }
 
     activatedUpgradeIcon(type) {
-
-            this.upgradeIconLocked = false;
     
-            // Remove tint to show it's active
-            this.upgradeIcon.clearTint();
+        this.upgradeIconLocked = false;
+        
+        // Remove tint to show it's active
+        this.upgradeIcon.clearTint();
+        
+        // Add pulsing effect
+        this.upgradeTween = this.scene.tweens.add({
+            targets: this.upgradeIcon,
+            scale: { from: 0.0615, to: 0.07 },
+            duration: 500,
+            yoyo: true,
+            repeat: -1,
+            ease: 'Sine.easeInOut'
+        });
+        
+        // Make it interactive
+        this.upgradeIcon.setInteractive().on('pointerdown', () => {
+            // Remove tween 
+            if (this.upgradeTween) {
+                this.upgradeTween.stop();
+                this.upgradeTween.destroy();
+                this.upgradeTween = null;
+            }        
+            this.upgradeIcon.setTint(0x808080);
+            
+            if (type === 1) {
+                // Upgrade action
+                this.totalPoints -= 1;
+               
+                gatherCounts[this.counterKey] -= 5;
+                this.gatheredText.setText(gatherCounts[this.counterKey]);
+            }
+            
+            if (type === 2) {
+                // Upgrade action
+                gatherCounts[this.counterKey] -= 20;
+                this.gatheredText.setText(gatherCounts[this.counterKey]);
+                gatherCounts[this.counterKey + '_auto'] += 1;
     
-            // Add pulsing effect
-            this.upgradeTween = this.scene.tweens.add({
-                targets: this.upgradeIcon,
-                scale: { from: 0.0615, to: 0.07 },
-                duration: 500,
-                yoyo: true,
-                repeat: -1,
-                ease: 'Sine.easeInOut'
-            });
-    
-            // Make it interactive
-            this.upgradeIcon.setInteractive().on('pointerdown', () => {
-                // Remove tween 
-                if (this.upgradeTween) {
-                    this.upgradeTween.stop();
-                    this.upgradeTween.destroy();
-                    this.upgradeTween = null;
-                }                
-                this.upgradeIcon.setTint(0x808080);
-                
-                if (type === 1) {
-                    // Upgrade action
-                    this.totalPoints -= 1;
-                   
-                    gatherCounts[this.counterKey] -= 5;
-                    this.gatheredText.setText(gatherCounts[this.counterKey]);
+                // Create the autoText display
+                if (!this.autoText) {
+                    this.autoText = this.scene.add.text(this.x, this.height / 2 - 40 + 30, 'Auto: ' + gatherCounts[this.counterKey + '_auto'] + '/sec', {
+                        font: '20px Arial',
+                        padding: { left: 10, right: 10 }
+                    });
+                    this.container.add(this.autoText);
+                } else {
+                    this.autoText.setText('Auto: ' + gatherCounts[this.counterKey + '_auto'] + '/sec');
                 }
-                if (type === 2) {
-//console.log(JSON.stringify(gatherCounts));
-                    // Upgrade action
-                    gatherCounts[this.counterKey] -= 20;
-                    this.gatheredText.setText(gatherCounts[this.counterKey]);
-                    gatherCounts[this.counterKey + '_auto'] += 1;
-
-                    // Create the autoText display
-                    if (!this.autoText) {
-                        this.autoText = this.scene.add.text(this.x, this.height / 2 - 40 + 30, 'Auto: ' + gatherCounts[this.counterKey + '_auto'] + '/sec', {
-                            font: '20px Arial',
-                            padding: { left: 10, right: 10 }
-                        });
-                        this.container.add(this.autoText);
-                    } else {
-                        this.autoText.setText('Auto: ' + gatherCounts[this.counterKey + '_auto'] + '/sec');
-                    }
-                    // Start auto-gathering if not already started
-                    if (!this.autoGatherInterval) {
-                        this.autoGatherInterval = this.scene.time.addEvent({
-                            delay: 1000,
-                            callback: () => {
-                                gatherCounts[this.counterKey] += gatherCounts[this.counterKey + '_auto'];
-                                this.gatheredText.setText(gatherCounts[this.counterKey]);
-                                this.checkUpgradeAvailability();
-                            },
-                            callbackScope: this,
-                            loop: true
-                        });
-                    }
+                // Start auto-gathering if not already started
+                if (!this.autoGatherInterval) {
+                    this.autoGatherInterval = this.scene.time.addEvent({
+                        delay: 1000,
+                        callback: () => {
+                            gatherCounts[this.counterKey] += gatherCounts[this.counterKey + '_auto'];
+                            this.gatheredText.setText(gatherCounts[this.counterKey]);
+                            this.checkUpgradeAvailability();
+                        },
+                        callbackScope: this,
+                        loop: true
+                    });
                 }
-                
-                this.upgradeIcon.destroy();
-                this.showUpgrade();
-                
-                this.checkUpgradeAvailability();
-            });
-
+            }
+            
+            this.upgradeIcon.destroy();
+            this.showUpgrade();
+            
+            this.checkUpgradeAvailability();
+        });
     }
 
     onTap() {

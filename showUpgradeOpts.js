@@ -33,13 +33,15 @@ export default class ShowUpgradeOpts {
             
                 if (fromBar && toBar) {
                     this.scene.scrollBox.replaceElement(fromBar, toBar.container);
-            
-                    // Optional: update the stored reference
-                    this.scene.upgradeBars[fromKey] = toBar;
+ 
                     // Optionally, remove the old reference from the object
                     delete this.scene.upgradeBars[fromKey];
+
+                    // Optional: update new stored reference
+                    this.scene.upgradeBars[toKey] = toBar.container;
+
                 } else {
-                    console.warn('Missing bar for upgrade:', fromKey, '->', toKey);
+                    console.warn('Missing bar for upgrade:' + fromKey, '->' + toKey);
                 }
             });
 

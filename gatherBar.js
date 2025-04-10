@@ -16,6 +16,7 @@ export default class GatherBar extends Phaser.GameObjects.Graphics {
         this.buttonSpacing = 10; // Spacing between the bar and the button
 
         // Variables
+        gatherCounts[title + '_auto'] = 0;
         gatherCounts[title] = 0;
         this.counterKey = title;
 
@@ -60,7 +61,7 @@ export default class GatherBar extends Phaser.GameObjects.Graphics {
         this.scene.add.existing(this.container);
     }
 
-    //// Upgrade
+    // Upgrade
     showUpgrade() {
         this.upgradeIconLocked = true; // Lock state until unlocked
 
@@ -70,9 +71,6 @@ export default class GatherBar extends Phaser.GameObjects.Graphics {
             .setTint(0x808080) // Gray tint
             .setOrigin(0.5);
         this.container.add(this.upgradeIcon); // Add the button to the container
-
-//this.upgradeIcon.clearTint(); // Restores full color
-
     }
 
     drawBar() {
@@ -121,7 +119,6 @@ export default class GatherBar extends Phaser.GameObjects.Graphics {
     
             // Make it interactive
             this.upgradeIcon.setInteractive().on('pointerdown', () => {
-                console.log('Upgrade clicked!');
                 // Remove tween 
                 if (this.upgradeTween) {
                     this.upgradeTween.stop();
@@ -133,41 +130,46 @@ export default class GatherBar extends Phaser.GameObjects.Graphics {
                 if (type === 1) {
                     // Upgrade action
                     this.totalPoints -= 1;
-                    
+                   
                     gatherCounts[this.counterKey] -= 5;
                     this.gatheredText.setText(gatherCounts[this.counterKey]);
                 }
-if (type === 2) {
-    // Upgrade action
-    gatherCounts[this.counterKey] -= 20;
-    this.gatheredText.setText(gatherCounts[this.counterKey]);
+                if (type === 2) {
+//console.log(JSON.stringify(gatherCounts));
+                    // Upgrade action
+                    gatherCounts[this.counterKey] -= 20;
+                    this.gatheredText.setText(gatherCounts[this.counterKey]);
+                    gatherCounts[this.counterKey + '_auto'] += 1;
 
-    // Create the autoText display
-    if (!this.autoText) {
-        this.autoText = this.scene.add.text(this.x, this.height / 2 - 40 + 30, 'Auto: 1/sec', {
-            font: '20px Arial',
-            padding: { left: 10, right: 10 }
-        });
-        this.container.add(this.autoText);
-    }
-    // Start auto-gathering if not already started
-    if (!this.autoGatherInterval) {
-        this.autoGatherInterval = this.scene.time.addEvent({
-            delay: 1000,
-            callback: () => {
-                gatherCounts[this.counterKey] += 1;
-                this.gatheredText.setText(gatherCounts[this.counterKey]);
-            },
-            callbackScope: this,
-            loop: true
-        });
-    }
-}
+                    // Create the autoText display
+                    if (!this.autoText) {
+                        this.autoText = this.scene.add.text(this.x, this.height / 2 - 40 + 30, 'Auto: ' + gatherCounts[this.counterKey + '_auto'] + '/sec', {
+                            font: '20px Arial',
+                            padding: { left: 10, right: 10 }
+                        });
+                        this.container.add(this.autoText);
+                    } else {
+                        this.autoText.setText('Auto: ' + gatherCounts[this.counterKey + '_auto'] + '/sec');
+                    }
+                    // Start auto-gathering if not already started
+                    if (!this.autoGatherInterval) {
+                        this.autoGatherInterval = this.scene.time.addEvent({
+                            delay: 1000,
+                            callback: () => {
+                                gatherCounts[this.counterKey] += gatherCounts[this.counterKey + '_auto'];
+                                this.gatheredText.setText(gatherCounts[this.counterKey]);
+                                this.checkUpgradeAvailability();
+                            },
+                            callbackScope: this,
+                            loop: true
+                        });
+                    }
+                }
                 
                 this.upgradeIcon.destroy();
                 this.showUpgrade();
                 
-                this.checkUpgradeAvailability()
+                this.checkUpgradeAvailability();
             });
 
     }
@@ -189,6 +191,11 @@ if (type === 2) {
                 if (this.totalPoints > 1) {
                     // Start over
                     this.drawBar();
+                } else {
+                    this.bar.clear();
+                    // Re-draw black background
+                    this.bar.fillStyle(this.backgroundColor, 1);
+                    this.bar.fillRect(50, 0, this.width, this.height);
                 }
                 
                 // Check if upgrade should be unlocked

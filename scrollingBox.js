@@ -119,7 +119,7 @@ export default class ScrollingBox {
     this.scrollBarThumb.y = scrollRatio * maxThumbY;
   }
 
-  addElement(gameObject, { spacing = 60, startY = 50 } = {}) {
+  addElement(gameObject, { spacing = 100, startY = 50 } = {}) {
     // Add the element to the container
     this.container.add(gameObject);
     this.children.push(gameObject);

@@ -94,15 +94,16 @@ class MainScene extends Phaser.Scene {
         // Add to entire tab + 40
         layout.addToTabPage('Gather', this.scrollBox.container);
         
+        const up1_desc = 'Reduces gather points by 1.';
         // Next is added below other items
-        this.gatherBar = new GatherBar(this, 'Pebbles', 40, 100, 5); // Set y=0 for stacking
+        this.gatherBar = new GatherBar(this, 'Pebbles', 40, 100, 5, up1_desc); // Set y=0 for stacking
         this.scrollBox.addElement(this.gatherBar.container);
         
         // Adds below gatherBar
-        this.gatherBar2 = new GatherBar(this, 'Twigs', 40, 100, 5); // Set y=0 for stacking
+        this.gatherBar2 = new GatherBar(this, 'Twigs', 40, 100, 5, up1_desc); // Set y=0 for stacking
         this.scrollBox.addElement(this.gatherBar2.container);
         
-        this.gatherBar3 = new GatherBar(this, 'Leaves', 40, 100, 5); // Set y=0 for stacking
+        this.gatherBar3 = new GatherBar(this, 'Leaves', 40, 100, 5, up1_desc); // Set y=0 for stacking
         this.scrollBox.addElement(this.gatherBar3.container);
 
         // Store references

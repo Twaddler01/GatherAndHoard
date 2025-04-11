@@ -68,7 +68,7 @@ box.add(bg); // Add background first so it's behind other elements
     
     
         const fromBar = this.scene.upgradeBars[fromKey]; // GatherBar
-        const toBar = new GatherBar(this.scene, toKey, 40, 100, 5); // new GatherBar
+        const toBar = new GatherBar(this.scene, toKey, 40, 100, 5, this.scene.gatherBar.up1_desc); // new GatherBar
     
         if (fromBar && toBar) {
             this.scene.scrollBox.replaceElement(fromBar.container, toBar.container);

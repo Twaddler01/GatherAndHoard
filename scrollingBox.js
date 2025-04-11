@@ -1,3 +1,5 @@
+import GatherBar from './gatherBar.js';  // Import the GatherBar class
+
 export default class ScrollingBox {
   constructor(scene, x, y, width, height, content, config = {}) {
     this.scene = scene;
@@ -52,7 +54,7 @@ export default class ScrollingBox {
     this.children.push(this.textObject);
     this.children.push(this.invisibleText); // Add the invisible text as a filler
 
-// Unsure of 35 value
+//// Unsure of 35 value
     this.totalHeight = this.invisibleText.height + 35 + this.y; // Adjust total height including filler
 
     // Scrollbar Track (relative to container)
@@ -152,23 +154,23 @@ export default class ScrollingBox {
         this.stackY += spacing;
       }
     }
+
+    replaceElement(oldContainer, newContainer) {
+        // Keep position
+        const oldY = oldContainer.y;
     
-    replaceElement(gameObject, newGameObject) {
-      // Find original Y before removing
-      const oldY = gameObject.y;
+        // Remove old from container and internal tracking
+        this.container.remove(oldContainer, true);
+        const index = this.children.indexOf(oldContainer);
+        if (index !== -1) this.children.splice(index, 1);
     
-      // Remove the old one from container and children
-      this.container.remove(gameObject, true);
-      const index = this.children.indexOf(gameObject);
-      if (index !== -1) this.children.splice(index, 1);
+        // Add new one in same place
+        newContainer.y = oldY;
+        this.container.add(newContainer);
+        this.children.push(newContainer);
+        newContainer.setMask(this.mask);
     
-      // Add the new one in the same position
-      newGameObject.y = oldY;
-      this.container.add(newGameObject);
-      this.children.push(newGameObject);
-      newGameObject.setMask(this.mask);
-    
-      return newGameObject;
+        return newContainer;
     }
 
   setText(content) {
@@ -184,11 +186,6 @@ export default class ScrollingBox {
       pointer.y >= this.y &&
       pointer.y <= this.y + this.height
     );
-  }
-
-  destroy() {
-    for (const child of this.children) child.destroy();
-    this.container.destroy(); // Now destroys the container as well
   }
 }
 

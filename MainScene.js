@@ -12,6 +12,7 @@ export const upgradeData = [
         from: 'Pebbles',
         to: 'Rocks',
         desc: 'Much larger than tiny pebbles.',
+        available: true,
     },
     {
         req_id: 'Rocks',
@@ -19,7 +20,16 @@ export const upgradeData = [
         from: 'Rocks',
         to: 'Stones',
         desc: 'Solid and heavy.',
-    }
+        available: true,
+    },
+    {
+        req_id: 'Twigs',
+        req_cnt: 1000,
+        from: 'Twigs',
+        to: 'Sticks',
+        desc: 'More pokey.',
+        available: true,
+    },
 ];
 
 upgradeData.forEach(upgrade => {
@@ -97,9 +107,9 @@ class MainScene extends Phaser.Scene {
 
         // Store references
         this.upgradeBars = {
-            Pebbles: this.gatherBar.container,   // `container` from ScrollingBox
-            Twigs: this.gatherBar2.container,
-            Leaves: this.gatherBar3.container,
+            Pebbles: this.gatherBar,
+            Twigs: this.gatherBar2,
+            Leaves: this.gatherBar3,
         };
 
         this.upgrade = new ShowUpgradeOpts(this, 0, 0);

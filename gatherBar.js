@@ -98,17 +98,26 @@ export default class GatherBar extends Phaser.GameObjects.Graphics {
             this.activatedUpgradeIcon(2);
         }
 
-        // Upgrade tab availability
-        upgradeData.forEach(upg => {
+        // Upgrade tab availability (only for active upgrades)
+        upgradeData
+        .filter(upg => upg.available)
+        .forEach(upg => {
             const id = `${upg.from}_to_${upg.to}`;
             const upgradeBtn = this.scene.upgrade.getUpgradeButton(id);
+            const upgradeReq = this.scene.upgrade.getUpgradeText(id + '_req');
+            const upgradeCost = this.scene.upgrade.getUpgradeText(id + '_cost');
             const currentCount = gatherCounts[upg.req_id] || 0;
-        
+    
             if (upgradeBtn) {
                 if (currentCount >= upg.req_cnt) {
                     upgradeBtn.setBackgroundColor('#2ecc71'); // green
+                    upgradeReq.setColor('#2ecc71');
+                    upgradeCost.setColor('#2ecc71');
+                    
                 } else {
                     upgradeBtn.setBackgroundColor('#333'); // default
+                    upgradeReq.setColor('red');
+                    upgradeCost.setColor('red');
                 }
             }
         });
@@ -216,5 +225,15 @@ export default class GatherBar extends Phaser.GameObjects.Graphics {
 
             }
         }
+    }
+
+    destroy() {
+        if (this.autoGatherInterval) {
+            this.autoGatherInterval.remove(); // Remove the timer
+            this.autoGatherInterval = null;
+        }
+    
+        // Clean up visuals
+        this.container.destroy(true); // true = destroy all children
     }
 }

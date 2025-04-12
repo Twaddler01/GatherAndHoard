@@ -2,6 +2,7 @@ import Layout from './layout.js'; // Import the Layout class
 import GatherBar from './gatherBar.js';  // Import the GatherBar class
 import ScrollingBox from './scrollingBox.js';
 import ShowUpgradeOpts from './showUpgradeOpts.js';
+import TiledBoxes from './tiledBoxes.js';
 
 export const gatherCounts = {};
 
@@ -125,6 +126,37 @@ class MainScene extends Phaser.Scene {
         
         layout.addToTabPage('Craft', this.craftScroll.container);
 
+        // Data array
+        const tileData = [
+            {
+                title: 'Pebbles Upgrade',
+                desc: 'Much larger than tiny pebbles.',
+                available: true,
+                requirements: [
+                    { id: 'Pebbles', count: 1000 }
+                ]
+            },
+            {
+                title: 'Rocks Upgrade',
+                desc: 'Solid and heavy.',
+                available: true,
+                requirements: [
+                    { id: 'Rocks', count: 1000 },
+                    { id: 'Pebbles', count: 500 }
+                ]
+            },
+            {
+                title: 'Twigs Upgrade',
+                desc: 'More pokey.',
+                available: true,
+                requirements: [
+                    { id: 'Twigs', count: 1000 }
+                ]
+            }
+        ];
+
+        this.craftdBoxes = new TiledBoxes(this, 0, 0, tileData);
+        this.craftScroll.addElement(this.craftdBoxes.container);
 
 
         // UPGRADE

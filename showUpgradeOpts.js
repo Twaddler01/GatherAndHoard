@@ -83,6 +83,7 @@ export default class ShowUpgradeOpts {
                         this.scene.upgradeBars[toKey] = toBar;
                 
                         gatherCounts[upgrade.req_id] -= upgrade.req_cnt;
+                        this.scene.inventory.updateInventory();
                 
                         this.removeUpgrade(upgrade);
                     }

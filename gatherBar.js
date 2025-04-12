@@ -173,6 +173,7 @@ export default class GatherBar extends Phaser.GameObjects.Graphics {
                
                 gatherCounts[this.counterKey] -= 5;
                 this.gatheredText.setText(gatherCounts[this.counterKey]);
+                this.scene.inventory.updateInventory();
             }
             
             if (type === 2) {
@@ -180,6 +181,8 @@ export default class GatherBar extends Phaser.GameObjects.Graphics {
                 gatherCounts[this.counterKey] -= 20;
                 this.gatheredText.setText(gatherCounts[this.counterKey]);
                 gatherCounts[this.counterKey + '_auto'] += 1;
+                this.scene.inventory.updateInventory();
+
     
                 // Create the autoText display
                 if (!this.autoText) {
@@ -197,6 +200,7 @@ export default class GatherBar extends Phaser.GameObjects.Graphics {
                         delay: 1000,
                         callback: () => {
                             gatherCounts[this.counterKey] += gatherCounts[this.counterKey + '_auto'];
+                            this.scene.inventory.updateInventory();
                             this.gatheredText.setText(gatherCounts[this.counterKey]);
                             this.checkUpgradeAvailability();
                         },
@@ -227,6 +231,7 @@ export default class GatherBar extends Phaser.GameObjects.Graphics {
 
                 gatherCounts[this.counterKey]++;
                 this.gatheredText.setText(gatherCounts[this.counterKey]);
+                this.scene.inventory.updateInventory();
 
                 this.remainingPoints = this.totalPoints;
 

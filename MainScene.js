@@ -3,6 +3,7 @@ import GatherBar from './gatherBar.js';  // Import the GatherBar class
 import ScrollingBox from './scrollingBox.js';
 import ShowUpgradeOpts from './showUpgradeOpts.js';
 import TiledBoxes from './tiledBoxes.js';
+import Inventory from './inventory.js';
 
 export const gatherCounts = {};
 
@@ -96,7 +97,10 @@ class MainScene extends Phaser.Scene {
         
         // Add to entire tab + 40
         layout.addToTabPage('Gather', this.scrollBox.container);
-        
+
+        this.inventory = new Inventory(this, 0, 0);
+        this.scrollBox.addElement(this.inventory.container, { startY: 10 });
+
         const up1_desc = 'Reduces gather points by 1.';
         // Next is added below other items
         this.gatherBar = new GatherBar(this, 'Pebbles', 40, 100, 5, up1_desc); // Set y=0 for stacking
@@ -159,6 +163,7 @@ class MainScene extends Phaser.Scene {
         this.craftScroll.addElement(this.craftdBoxes.container);
 
 
+
         // UPGRADE
         //this.upgrade = new ShowUpgradeOpts(this, 0, 0);
         //layout.addToTabPage('Upgrade', this.upgrade.container);
@@ -174,8 +179,6 @@ class MainScene extends Phaser.Scene {
         
         this.upgrade = new ShowUpgradeOpts(this, 0, 0);
         this.upgradeScroll.addElement(this.upgrade.container);
-
-
 
         // tests
         //const NEWgatherBar = new GatherBar(this, 'NEW TEST', 40, 100, 5); // Set y=0 for stacking

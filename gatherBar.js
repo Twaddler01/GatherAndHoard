@@ -25,20 +25,20 @@ export default class GatherBar extends Phaser.GameObjects.Graphics {
         // Create a container to hold both the bar and the button
         this.container = this.scene.add.container(x, y); // Position of the container
 
-        this.title = this.scene.add.text(x, this.height / 2 - 40, title + ': ', {
+        this.title = this.scene.add.text(x, this.height / 2, title + ': ', {
             font: '20px Arial',
             padding: { left: 10, right: 10 }
         });
 
         // Create counter text
-        this.gatheredText = this.scene.add.text(x + 120, this.height / 2 - 40, '0', {
+        this.gatheredText = this.scene.add.text(x + 120, this.height / 2, '0', {
             font: '20px Arial',
             padding: { left: 10, right: 10 }
         });
         this.container.add(this.gatheredText);
 
         // Create the gather button (to the left of the bar)
-        this.gatherButton = this.scene.add.text(-35, this.height / 2 - 10, 'Gather', {
+        this.gatherButton = this.scene.add.text(-35, this.height / 2 + 30, 'Gather', {
             font: '20px Arial',
             fill: '#ffffff',
             backgroundColor: '#008000',
@@ -47,7 +47,7 @@ export default class GatherBar extends Phaser.GameObjects.Graphics {
         .setInteractive()
         .on('pointerdown', this.onTap, this); // Set button interaction
 
-        this.upgradeInfo = this.scene.add.text(x, this.height / 2 + 15, 'Next Upgrade: ' + up1_desc, {
+        this.upgradeInfo = this.scene.add.text(x, this.height / 2 + 55, 'Next Upgrade: ' + up1_desc, {
             font: '14px Arial',
             wordWrap: { width: this.width },
             padding: { left: 10, right: 10 }
@@ -74,7 +74,7 @@ export default class GatherBar extends Phaser.GameObjects.Graphics {
     showUpgrade() {
         this.upgradeIconLocked = true; // Lock state until unlocked
 
-        this.upgradeIcon = this.scene.add.image(this.container.width + 280, this.container.width + 15, 'upgradeIcon')
+        this.upgradeIcon = this.scene.add.image(this.container.width + 280, this.container.width + 60, 'upgradeIcon')
             .setScale(0.0615) // Resize to 50x50
             .setOrigin(0) // Optional: top-left origin
             .setTint(0x808080) // Gray tint
@@ -88,12 +88,12 @@ export default class GatherBar extends Phaser.GameObjects.Graphics {
 
         // Draw background
         this.bar.fillStyle(this.backgroundColor, 1);
-        this.bar.fillRect(50, 0, this.width, this.height);
+        this.bar.fillRect(50, 40, this.width, this.height);
 
         // Draw fill based on remaining points
         const fillWidth = (this.width * this.remainingPoints) / this.totalPoints;
         this.bar.fillStyle(this.fillColor, 1);
-        this.bar.fillRect(50, 0, fillWidth, this.height);
+        this.bar.fillRect(50, 40, fillWidth, this.height);
     }
 
     checkUpgradeAvailability() {
@@ -105,7 +105,7 @@ export default class GatherBar extends Phaser.GameObjects.Graphics {
             this.upgradeInfo.setText(up2_desc);
             if (this.first_check) {
                 this.bar.fillStyle(0x4f4f4f, 1);
-                this.bar.fillRect(50, 0, this.width, this.height);
+                this.bar.fillRect(50, 40, this.width, this.height);
                 this.first_check = false;
             }
         }
@@ -183,7 +183,7 @@ export default class GatherBar extends Phaser.GameObjects.Graphics {
     
                 // Create the autoText display
                 if (!this.autoText) {
-                    this.autoText = this.scene.add.text(this.x, this.height / 2 - 40 + 30, 'Auto: ' + gatherCounts[this.counterKey + '_auto'] + '/sec', {
+                    this.autoText = this.scene.add.text(this.x, this.height / 2 + 28, 'Auto: ' + gatherCounts[this.counterKey + '_auto'] + '/sec', {
                         font: '20px Arial',
                         padding: { left: 10, right: 10 }
                     });
@@ -237,7 +237,7 @@ export default class GatherBar extends Phaser.GameObjects.Graphics {
                     this.bar.clear();
                     // Re-draw black background
                     this.bar.fillStyle(0x4f4f4f, 1);
-                    this.bar.fillRect(50, 0, this.width, this.height);
+                    this.bar.fillRect(50, 40, this.width, this.height);
                     const up2_desc = 'Next Upgrade: Automatically gather +' + (gatherCounts[this.counterKey + '_auto'] + 1) + ' ' + this.counterKey + ' per second.';
                     this.upgradeInfo.setText(up2_desc);
                 }

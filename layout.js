@@ -15,7 +15,7 @@ export default class Layout {
         this.tabsContainer = this.scene.add.container(0, this.tabYPosition);
         this.tabs = [];
     
-        this.tabLabels = ['Gather', 'Upgrade', 'Tab 3'];
+        this.tabLabels = ['Gather', 'Craft', 'Upgrade'];
     
         let currentX = 0;
     

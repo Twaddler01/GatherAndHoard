@@ -77,11 +77,13 @@ class MainScene extends Phaser.Scene {
         //let yPos = layout.createContentBackground();
         //console.log(yPos);
         
-        const textBox = this.add.text(5, 5, 'TITLE', {});
-        layout.addToTabPage('Gather', textBox);
-        
+        // GATHER
+        //const textBox = this.add.text(5, 5, 'TITLE', {});
+        //layout.addToTabPage('Gather', textBox);
         // Offset by 40 for text title above
-        this.scrollBox = new ScrollingBox(this, 0, 40, this.scale.width, this.scale.height, "", {
+        //this.scrollBox = new ScrollingBox(this, 0, 40, this.scale.width, this.scale.height, "", {
+
+        this.scrollBox = new ScrollingBox(this, 0, 0, this.scale.width, this.scale.height, "", {
           bgColor: 0x000000,  // Dark gray background for testing
           fontFamily: 'Arial',
           fontSize: '18px',
@@ -113,9 +115,36 @@ class MainScene extends Phaser.Scene {
             Leaves: this.gatherBar3,
         };
 
-        this.upgrade = new ShowUpgradeOpts(this, 0, 0);
-        layout.addToTabPage('Upgrade', this.upgrade.container);
+        // CRAFT
+        this.craftScroll = new ScrollingBox(this, 0, 0, this.scale.width, this.scale.height, "", {
+            bgColor: 0x000000,  // Dark gray background for testing
+            fontFamily: 'Arial',
+            fontSize: '18px',
+            color: '#ffffff'
+        });
         
+        layout.addToTabPage('Craft', this.craftScroll.container);
+
+
+
+        // UPGRADE
+        //this.upgrade = new ShowUpgradeOpts(this, 0, 0);
+        //layout.addToTabPage('Upgrade', this.upgrade.container);
+
+        this.upgradeScroll = new ScrollingBox(this, 0, 0, this.scale.width, this.scale.height, "", {
+            bgColor: 0x000000,  // Dark gray background for testing
+            fontFamily: 'Arial',
+            fontSize: '18px',
+            color: '#ffffff'
+        });
+        
+        layout.addToTabPage('Upgrade', this.upgradeScroll.container);
+        
+        this.upgrade = new ShowUpgradeOpts(this, 0, 0);
+        this.upgradeScroll.addElement(this.upgrade.container);
+
+
+
         // tests
         //const NEWgatherBar = new GatherBar(this, 'NEW TEST', 40, 100, 5); // Set y=0 for stacking
         //this.scrollBox.replaceElement(gatherBar2.container, NEWgatherBar.container);

@@ -167,6 +167,7 @@ export default class GatherBar extends Phaser.GameObjects.Graphics {
                 if (allMet) {
                     craftBtn.setBackgroundColor('#2ecc71');
                     if (craftReqLabel) craftReqLabel.setColor('#2ecc71');
+                    // Main trigger
                     craft.canBuy = true;
                 } else {
                     craftBtn.setBackgroundColor('#333');

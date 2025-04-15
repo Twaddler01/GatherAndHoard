@@ -133,8 +133,6 @@ class MainScene extends Phaser.Scene {
         this.craftdBoxes = new TiledBoxes(this, 0, 0);
         this.craftScroll.addElement(this.craftdBoxes.container);
 
-
-
         // UPGRADE
         //this.upgrade = new ShowUpgradeOpts(this, 0, 0);
         //layout.addToTabPage('Upgrade', this.upgrade.container);

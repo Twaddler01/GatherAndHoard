@@ -1,4 +1,5 @@
 import { gatherCounts, upgradeData } from './MainScene.js';
+import { dataArray } from './tiledBoxes.js';
 
 export default class GatherBar extends Phaser.GameObjects.Graphics {
     constructor(scene, title, x, y, points, up1_desc) {
@@ -120,6 +121,7 @@ export default class GatherBar extends Phaser.GameObjects.Graphics {
         .filter(upg => upg.available)
         .forEach(upg => {
             const id = `${upg.from}_to_${upg.to}`;
+            // Upgrade data
             const upgradeBtn = this.scene.upgrade.getUpgradeButton(id);
             const upgradeReq = this.scene.upgrade.getUpgradeText(id + '_req');
             const upgradeCost = this.scene.upgrade.getUpgradeText(id + '_cost');
@@ -135,6 +137,39 @@ export default class GatherBar extends Phaser.GameObjects.Graphics {
                     upgradeBtn.setBackgroundColor('#333'); // default
                     upgradeReq.setColor('red');
                     upgradeCost.setColor('red');
+                }
+            }
+        });
+
+        // Craft tab availability
+        dataArray.forEach(craft => {
+            const craftBtn = this.scene.craftdBoxes.getTileButton(craft.title);
+            const craftReqLabel = this.scene.craftdBoxes.getTileColor(craft.title + '_lbl');
+        
+            if (craftBtn) {
+                let allMet = true;
+        
+                craft.requirements.forEach((req, i) => {
+                    const reqKey = `${req.id}_req_${i}`;
+                    const costText = this.scene.craftdBoxes.getTileColor(reqKey);
+                    const currentCount = gatherCounts[req.id] || 0;
+        
+                    if (currentCount >= 0) { // TEST req.count <> 10
+                        costText.setColor('#2ecc71');
+                    } else {
+                        costText.setColor('red');
+                        allMet = false;
+                    }
+                });
+        
+                if (allMet) {
+                    craftBtn.setBackgroundColor('#2ecc71');
+                    if (craftReqLabel) craftReqLabel.setColor('#2ecc71');
+                    craft.canBuy = true;
+                } else {
+                    craftBtn.setBackgroundColor('#333');
+                    if (craftReqLabel) craftReqLabel.setColor('red');
+                    craft.canBuy = false;
                 }
             }
         });

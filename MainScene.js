@@ -130,36 +130,7 @@ class MainScene extends Phaser.Scene {
         
         layout.addToTabPage('Craft', this.craftScroll.container);
 
-        // Data array
-        const tileData = [
-            {
-                title: 'Pebbles Upgrade',
-                desc: 'Much larger than tiny pebbles.',
-                available: true,
-                requirements: [
-                    { id: 'Pebbles', count: 1000 }
-                ]
-            },
-            {
-                title: 'Rocks Upgrade',
-                desc: 'Solid and heavy.',
-                available: true,
-                requirements: [
-                    { id: 'Rocks', count: 1000 },
-                    { id: 'Pebbles', count: 500 }
-                ]
-            },
-            {
-                title: 'Twigs Upgrade',
-                desc: 'More pokey.',
-                available: true,
-                requirements: [
-                    { id: 'Twigs', count: 1000 }
-                ]
-            }
-        ];
-
-        this.craftdBoxes = new TiledBoxes(this, 0, 0, tileData);
+        this.craftdBoxes = new TiledBoxes(this, 0, 0);
         this.craftScroll.addElement(this.craftdBoxes.container);
 
 

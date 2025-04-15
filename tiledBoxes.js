@@ -3,11 +3,12 @@ import GatherBar from './gatherBar.js';
 import { gatherCounts } from './MainScene.js';
 
 // Data array
-export const tileData = [
+export const dataArray = [
     {
         title: 'Pebbles Upgrade',
         desc: 'Much larger than tiny pebbles.',
         available: true,
+        canBuy: false,
         requirements: [
             { id: 'Pebbles', count: 1000 }
         ]
@@ -16,15 +17,18 @@ export const tileData = [
         title: 'Rocks Upgrade',
         desc: 'Solid and heavy.',
         available: true,
+        canBuy: false,
         requirements: [
             { id: 'Rocks', count: 1000 },
-            { id: 'Pebbles', count: 500 }
+            { id: 'Pebbles', count: 500 },
+            { id: 'Sticks', count: 500 },
         ]
     },
     {
         title: 'Twigs Upgrade',
         desc: 'More pokey.',
         available: true,
+        canBuy: false,
         requirements: [
             { id: 'Twigs', count: 1000 }
         ]
@@ -34,6 +38,7 @@ export const tileData = [
         title: 'Twigs Upgrade',
         desc: 'More pokey.',
         available: true,
+        canBuy: false,
         requirements: [
             { id: 'Twigs', count: 1000 }
         ]
@@ -42,6 +47,7 @@ export const tileData = [
         title: 'Twigs Upgrade',
         desc: 'More pokey.',
         available: true,
+        canBuy: false,
         requirements: [
             { id: 'Twigs', count: 1000 }
         ]
@@ -50,6 +56,7 @@ export const tileData = [
         title: 'Twigs Upgrade',
         desc: 'More pokey.',
         available: true,
+        canBuy: false,
         requirements: [
             { id: 'Twigs', count: 1000 }
         ]
@@ -58,6 +65,7 @@ export const tileData = [
         title: 'Twigs Upgrade',
         desc: 'More pokey.',
         available: true,
+        canBuy: false,
         requirements: [
             { id: 'Twigs', count: 1000 }
         ]
@@ -72,7 +80,8 @@ export default class TiledBoxes {
 
 // Stored output manipulation
 this.tileButtons = {}; // Store buttons keyed by data id
-this.tileColors = {};
+this.tileColor = {};
+this.tileColorCnt = {};
 
         // Offset of each 'box'
         this.spacingX = 170; // boxWidth +10
@@ -89,24 +98,25 @@ this.tileColors = {};
     }
 
     getTileColor(id) {
-        return this.tileColors[id];
+        return this.tileColor[id];
     }
-
+    
  setupBoxes() {
     this.container.removeAll(true); // clear and destroy existing buttons
 
     const availableWidth = this.scene.scale.width; // or a fixed width container if you're using one
     const boxWidth = 160;
+    const addedBoxHeight = 30; // Extra height above square (boxWidth)
     const spacing = 10;
     const totalBoxWidth = boxWidth + spacing;
 
     const maxCols = Math.floor((availableWidth - 20) / totalBoxWidth); // 20 is left margin
     let visibleIndex = 0;
 
-    tileData.forEach((data) => {
+    dataArray.forEach((data) => {
         if (!data.available) return;
 
-        const bg = this.scene.add.rectangle(-10, -10, boxWidth, boxWidth, 0x000000).setOrigin(0);
+        const bg = this.scene.add.rectangle(-10, -10, boxWidth, boxWidth + addedBoxHeight, 0x000000).setOrigin(0);
 
         const box = this.scene.add.container(0, 0);
         box.add(bg);
@@ -155,6 +165,8 @@ this.tileColors = {};
             font: '16px Arial',
             color: 'red'
         });
+        
+        this.tileColor[data.title + '_lbl'] = requiresText;
 
         let nextCostY = costYOffset + 50;
         const costTexts = [];
@@ -165,7 +177,8 @@ this.tileColors = {};
                 color: 'red'
             });
 
-            this.tileColors[`${data.title}_cost_${i}`] = costText;
+            this.tileColor[req.id + '_req_' + i] = costText;
+            this.tileColor[req.id + '_cost_' + i] = req.count;
             costTexts.push(costText);
 
             nextCostY += 20;
@@ -183,7 +196,7 @@ this.tileColors = {};
         const row = Math.floor(visibleIndex / maxCols);
 
         box.x = 20 + col * totalBoxWidth;
-        box.y = 20 + row * (boxWidth + spacing);
+        box.y = 20 + row * (boxWidth + addedBoxHeight + spacing);
 
         this.container.add(box);
         visibleIndex++;
@@ -196,3 +209,38 @@ this.tileColors = {};
         this.setupBoxes();
     }
 }
+
+/*
+        // Craft tab availability
+        dataArray.forEach(craft => {
+            const craftBtn = this.scene.craftdBoxes.getTileButton(craft.title);
+            const craftReqLabel = this.scene.craftdBoxes.getTileColor(craft.title + '_lbl');
+        
+            if (craftBtn) {
+                let allMet = true;
+        
+                craft.requirements.forEach((req, i) => {
+                    const reqKey = `${req.id}_req_${i}`;
+                    const costText = this.scene.craftdBoxes.getTileColor(reqKey);
+                    const currentCount = gatherCounts[req.id] || 0;
+        
+                    if (currentCount >= 0) { // TEST req.count <> 10
+                        costText.setColor('#2ecc71');
+                    } else {
+                        costText.setColor('red');
+                        allMet = false;
+                    }
+                });
+        
+                if (allMet) {
+                    craftBtn.setBackgroundColor('#2ecc71');
+                    if (craftReqLabel) craftReqLabel.setColor('#2ecc71');
+                    craft.canBuy = true;
+                } else {
+                    craftBtn.setBackgroundColor('#333');
+                    if (craftReqLabel) craftReqLabel.setColor('red');
+                    craft.canBuy = false;
+                }
+            }
+        });
+*/

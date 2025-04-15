@@ -10,7 +10,7 @@ export const gatherCounts = {};
 export const upgradeData = [
     {
         req_id: 'Pebbles',
-        req_cnt: 1000,
+        req_cnt: 10,
         from: 'Pebbles',
         to: 'Rocks',
         desc: 'Much larger than tiny pebbles.',
@@ -18,7 +18,7 @@ export const upgradeData = [
     },
     {
         req_id: 'Rocks',
-        req_cnt: 1000,
+        req_cnt: 10,
         from: 'Rocks',
         to: 'Stones',
         desc: 'Solid and heavy.',
@@ -26,7 +26,7 @@ export const upgradeData = [
     },
     {
         req_id: 'Twigs',
-        req_cnt: 1000,
+        req_cnt: 10,
         from: 'Twigs',
         to: 'Sticks',
         desc: 'More pokey.',

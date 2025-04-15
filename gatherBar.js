@@ -142,7 +142,9 @@ export default class GatherBar extends Phaser.GameObjects.Graphics {
         });
 
         // Craft tab availability
-        dataArray.forEach(craft => {
+        dataArray
+        .filter(craft => craft.available)
+        .forEach(craft => {
             const craftBtn = this.scene.craftdBoxes.getTileButton(craft.title);
             const craftReqLabel = this.scene.craftdBoxes.getTileColor(craft.title + '_lbl');
         
@@ -154,7 +156,7 @@ export default class GatherBar extends Phaser.GameObjects.Graphics {
                     const costText = this.scene.craftdBoxes.getTileColor(reqKey);
                     const currentCount = gatherCounts[req.id] || 0;
         
-                    if (currentCount >= 0) { // TEST req.count <> 10
+                    if (currentCount >= req.count) { // TEST req.count <> 10
                         costText.setColor('#2ecc71');
                     } else {
                         costText.setColor('red');

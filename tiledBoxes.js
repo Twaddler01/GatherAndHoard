@@ -10,7 +10,7 @@ export const dataArray = [
         available: true,
         canBuy: false,
         requirements: [
-            { id: 'Pebbles', count: 1000 }
+            { id: 'Pebbles', count: 5 }
         ]
     },
     {
@@ -19,9 +19,9 @@ export const dataArray = [
         available: true,
         canBuy: false,
         requirements: [
-            { id: 'Rocks', count: 1000 },
-            { id: 'Pebbles', count: 500 },
-            { id: 'Sticks', count: 500 },
+            { id: 'Rocks', count: 3 },
+            { id: 'Pebbles', count: 5 },
+            { id: 'Sticks', count: 3 },
         ]
     },
     {
@@ -30,7 +30,7 @@ export const dataArray = [
         available: true,
         canBuy: false,
         requirements: [
-            { id: 'Twigs', count: 1000 }
+            { id: 'Twigs', count: 5 }
         ]
     },
     // duplicates
@@ -40,7 +40,7 @@ export const dataArray = [
         available: true,
         canBuy: false,
         requirements: [
-            { id: 'Twigs', count: 1000 }
+            { id: 'Twigs', count: 5 }
         ]
     },
         {
@@ -49,7 +49,7 @@ export const dataArray = [
         available: true,
         canBuy: false,
         requirements: [
-            { id: 'Twigs', count: 1000 }
+            { id: 'Twigs', count: 5 }
         ]
     },
         {
@@ -58,7 +58,7 @@ export const dataArray = [
         available: true,
         canBuy: false,
         requirements: [
-            { id: 'Twigs', count: 1000 }
+            { id: 'Twigs', count: 5 }
         ]
     },
     {
@@ -67,7 +67,7 @@ export const dataArray = [
         available: true,
         canBuy: false,
         requirements: [
-            { id: 'Twigs', count: 1000 }
+            { id: 'Twigs', count: 5 }
         ]
     }
 ];

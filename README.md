@@ -1,4 +1,4 @@
 ## WIP
 
-- "Auto gather" needs to be shown in inventory area (+ 1/s)
 - GatherBar needs some reworkimg.
+- ScrollingBar needs to recall last Y position per individual tab.

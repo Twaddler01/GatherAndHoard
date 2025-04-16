@@ -116,12 +116,12 @@ export default class TiledBoxes {
         dataArray.forEach((data) => {
             if (!data.available) return;
     
-            const bg = this.scene.add.rectangle(-10, -10, boxWidth, boxWidth + addedBoxHeight, 0x000000).setOrigin(0);
+            const bg = this.scene.add.rectangle(-10, -20, boxWidth, boxWidth + addedBoxHeight, 0x000000).setOrigin(0);
     
-            const box = this.scene.add.container(0, 0);
+            const box = this.scene.add.container(0, -10);
             box.add(bg);
     
-            const tileText = this.scene.add.text(0, 0, data.title, {
+            const tileText = this.scene.add.text(0, -10, data.title, {
                 font: '16px Arial',
                 color: '#fff'
             });

@@ -13,7 +13,7 @@ export default class ShowUpgradeOpts {
 
         // Offset of each 'box'
         this.spacingX = 170; // boxWidth +10
-        this.spacingY = 150; // boxHeight + 10
+        this.spacingY = 160; // boxHeight + 10
 
         this.container = scene.add.container();
 
@@ -38,15 +38,15 @@ export default class ShowUpgradeOpts {
             if (!upgrade.available) return;
     
             const boxWidth = 160;
-            const boxHeight = 140;
+            const boxHeight = 150;
             
-            const bg = this.scene.add.rectangle(-10, -10, boxWidth, boxHeight, 0x000000);
+            const bg = this.scene.add.rectangle(-10, -20, boxWidth, boxHeight, 0x000000);
             bg.setOrigin(0); // Align to top-left corner
             
-            const box = this.scene.add.container(0, 0);
+            const box = this.scene.add.container(0, -10);
             box.add(bg); // Add background first so it's behind other elements
 
-            const arrowText = this.scene.add.text(0, 0, `${upgrade.from} -> ${upgrade.to}`, {
+            const arrowText = this.scene.add.text(0, -10, `${upgrade.from} -> ${upgrade.to}`, {
                 font: '16px Arial',
                 color: '#fff'
             });
@@ -61,7 +61,35 @@ export default class ShowUpgradeOpts {
                 
                 // Check required resource cnt
                 const playerAmount = gatherCounts[upgrade.req_id] || 0;
+
+                if (playerAmount >= upgrade.req_cnt) {
+            
+                    console.log('Upgrading:' + upgrade.id);
                 
+                    const newBar = new GatherBar(this.scene, upgrade.to, 40, 100, 5, this.scene.gatherBar.up1_desc); // new GatherBar
+                    this.scene.upgradeBars[upgrade.to] = newBar;
+                    this.scene.scrollBox.addElement(newBar.container);
+                
+                    gatherCounts[upgrade.req_id] -= upgrade.req_cnt;
+                    
+                    this.scene.inventory.updateInventory();
+                    this.removeUpgrade(upgrade);
+                    Object.values(this.scene.upgradeBars).forEach(bar => {
+                        bar.upgradeIcon.destroy();
+                        bar.showUpgrade();
+                        bar.checkUpgradeAvailability();
+                    });
+                    console.log(this.scene.upgradeBars);
+                } else {
+                    console.log('Not enough materials...');
+                }
+
+
+
+
+
+
+/*
                 if (playerAmount >= upgrade.req_cnt) {
             
                     console.log('Upgrading:' + upgrade.id);
@@ -90,6 +118,7 @@ export default class ShowUpgradeOpts {
                 } else {
                     console.log('Not enough materials...');
                 }
+*/
             });
     
             this.upgradeButtons[upgrade.id] = upgradeBtn;

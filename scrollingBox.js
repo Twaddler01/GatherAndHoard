@@ -70,107 +70,68 @@ export default class ScrollingBox {
     this.scrollBarThumb.fillRect(width - 10, 0, 10, this.thumbHeight - 22 - this.y - 10); // Positioned relative to the container's x, y
     this.container.add(this.scrollBarThumb);
 
-const maxScroll = this.totalHeight - this.height;
-this.thumbHeight = maxScroll > 0
-  ? Math.max((this.height / this.totalHeight) * this.height, 20)
-  : this.height;
+    const maxScroll = this.totalHeight - this.height;
+    this.thumbHeight = maxScroll > 0
+        ? Math.max((this.height / this.totalHeight) * this.height, 20)
+        : this.height;
 
     // Touch scroll
     this.startY = 0;
     this.dragging = false;
     this.textStartY = 0;
 
-
-
-scene.input.on('pointerdown', (pointer) => {
-  if (this._inBounds(pointer)) {
-    this.startY = pointer.y;
-    this.startScrollY = this.scrollY;  // Anchor actual scrollY value
-    this.dragging = true;
-  }
-});
-
-scene.input.on('pointermove', (pointer) => {
-  if (this.dragging) {
-    const delta = pointer.y - this.startY;
-const newScrollY = this.startScrollY - delta;
-this.scrollTo(5 - newScrollY);
-    //this.scrollTo(5 - (this.startScrollY + delta));
-  }
-});
-
-/*
     scene.input.on('pointerdown', (pointer) => {
       if (this._inBounds(pointer)) {
         this.startY = pointer.y;
-        this.textStartY = this.textObject.y;
+        this.startScrollY = this.scrollY;  // Anchor actual scrollY value
         this.dragging = true;
       }
     });
-*/
-    scene.input.on('pointerup', () => {
-      this.dragging = false;
-    });
-/*
+    
     scene.input.on('pointermove', (pointer) => {
       if (this.dragging) {
         const delta = pointer.y - this.startY;
-        this.scrollTo(this.textStartY + delta);
+    const newScrollY = this.startScrollY - delta;
+    this.scrollTo(5 - newScrollY);
+        //this.scrollTo(5 - (this.startScrollY + delta));
       }
     });
-*/
+
+    scene.input.on('pointerup', () => {
+      this.dragging = false;
+    });
   }
 
   scroll(amount) {
     this.scrollTo(this.textObject.y - amount);
   }
   
-scrollTo(newY) {
-  const maxScroll = this.totalHeight - this.height;
-
-  if (maxScroll <= 0) {
-    this.scrollBarThumb.y = 0; // No scrolling needed, reset thumb to top
-    return;
-  }
-
-  const minY = 5 - maxScroll;
-  const maxY = 5;
-  const clampedY = Phaser.Math.Clamp(newY, minY, maxY);
-  const offset = clampedY - this.textObject.y;
-
-  // Apply scroll offset to all children
-  for (const child of this.children) {
-    child.y += offset;
-  }
-
-  this.scrollY = maxY - clampedY;
-
-  // Scrollbar thumb position
-  const scrollRatio = this.scrollY / maxScroll;
-  const maxThumbY = this.height - this.thumbHeight;
-  this.scrollBarThumb.y = scrollRatio * maxThumbY;
-}
-/*
-  scrollTo(newY) {
-    const minY = 5 - (this.totalHeight - this.height);  // Ensure no scrolling goes beyond bottom of container
-    const maxY = 5; 
-    const clampedY = Phaser.Math.Clamp(newY, minY, maxY);  // Clamping ensures we don't scroll out of bounds
-    const offset = clampedY - this.textObject.y;
-
-    // Apply scroll offset to all children
-    for (const child of this.children) {
-      child.y += offset;
+    scrollTo(newY) {
+      const maxScroll = this.totalHeight - this.height;
+    
+      if (maxScroll <= 0) {
+        this.scrollBarThumb.y = 0; // No scrolling needed, reset thumb to top
+        return;
+      }
+    
+      const minY = 5 - maxScroll;
+      const maxY = 5;
+      const clampedY = Phaser.Math.Clamp(newY, minY, maxY);
+      const offset = clampedY - this.textObject.y;
+    
+      // Apply scroll offset to all children
+      for (const child of this.children) {
+        child.y += offset;
+      }
+    
+      this.scrollY = maxY - clampedY;
+    
+      // Scrollbar thumb position
+      const scrollRatio = this.scrollY / maxScroll;
+      const maxThumbY = this.height - this.thumbHeight;
+      this.scrollBarThumb.y = scrollRatio * maxThumbY;
     }
 
-    // Update the scroll position (track)
-    this.scrollY = maxY - clampedY;
-
-    // Update scrollbar thumb position based on scroll
-    const scrollRatio = this.scrollY / (this.totalHeight - this.height);
-    const maxThumbY = this.height - this.thumbHeight;
-    this.scrollBarThumb.y = scrollRatio * maxThumbY;
-  }
-*/
     addElement(gameObject, options = {}) {
         this.container.add(gameObject);
         this.children.push(gameObject);
@@ -203,64 +164,6 @@ scrollTo(newY) {
         this.stackY = y; // Optional: track last Y
     }
 
-
-/*
-  addElement(gameObject, { spacing = 100, startY = 10 } = {}) {
-    // Add the element to the container
-    this.container.add(gameObject);
-    this.children.push(gameObject);
-    
-    // Set the position for the new element
-    gameObject.y = this.stackY + startY;
-    
-    // Advance stackY for the next element
-    this.stackY += spacing;
-    
-    // Apply the mask to the new element
-    gameObject.setMask(this.mask);
-
-    return gameObject;
-  }
- 
-reflowElements(spacing = 0, startY = 10) {
-  let y = startY;
-
-  const elements = this.children.filter(c => c !== this.textObject && c !== this.invisibleText);
-
-  for (let i = 0; i < elements.length; i++) {
-    const child = elements[i];
-    const bounds = child.getBounds();
-    child.y = y;
-    y += bounds.height;
-
-    // Only add spacing after the element, not before the first
-    if (i < elements.length - 1) {
-      y += spacing;
-    }
-  }
-
-  this.stackY = y;
-}
-
-    removeElement(gameObject, { spacing = 60, startY = 50 } = {}) {
-      // Remove from container and children list
-      this.container.remove(gameObject, true); // true = destroy from scene
-      const index = this.children.indexOf(gameObject);
-      if (index !== -1) this.children.splice(index, 1);
-    
-      // Reset stacking position
-      this.stackY = 0;
-    
-      // Filter for all elements that were added with addElement
-      const stackable = this.children.filter(child => child !== this.textObject && child !== this.invisibleText);
-    
-      // Realign each
-      for (const child of stackable) {
-        child.y = this.stackY + startY;
-        this.stackY += spacing;
-      }
-    }
-*/
     replaceElement(oldContainer, newContainer) {
         // Keep position
         const oldY = oldContainer.y;

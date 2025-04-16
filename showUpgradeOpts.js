@@ -131,36 +131,3 @@ export default class ShowUpgradeOpts {
         this.setupUpgrades();
     }
 }
-
-function createPaddedContainer(scene, x, y, width, height, padding, centerItems = false) {
-    // Create the background rectangle with padding
-    const bg = scene.add.rectangle(x, y, width + padding * 2, height + padding * 2, 0x000000);
-    bg.setOrigin(0, 0);  // Set the origin to the top-left corner
-
-    const container = scene.add.container(x, y);
-    container.add(bg);
-
-    let currentY = padding;  // Initial y position (padding applied)
-
-    // Helper function to add item to container
-    function addItem(item) {
-        if (centerItems) {
-            // Center the item horizontally within the container
-            item.setX(container.x + (container.width - item.width) / 2);
-        } else {
-            // Align item to the left with padding
-            item.setX(container.x + padding);
-        }
-
-        item.setY(container.y + currentY);  // Set the y position
-        container.add(item);
-
-        // Update the currentY for next item
-        currentY += item.height + padding;  // Space out items by the padding
-    }
-
-    return {
-        container,
-        addItem,
-    };
-}

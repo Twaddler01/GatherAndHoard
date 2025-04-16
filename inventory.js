@@ -59,9 +59,6 @@ export default class Inventory {
                 this.textObjects[id] = newText;
                 
                 this.scene.scrollBox.reflowElements(); // adjusts all elements below inventory
-                //const invBounds = this.container.getBounds();
-                //this.scene.scrollBox.reflowElements(invBounds.bottom + 10);
-
             }
         }
     }

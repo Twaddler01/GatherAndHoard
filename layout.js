@@ -71,24 +71,6 @@ export default class Layout {
         this.tabs.push({ bg, text }); // Save both bg and text for styling later
     }
 
-/*
-    createTab(label, x, y, width) {
-        const tab = this.scene.add.text(x, y, label, {
-            font: '20px Arial',
-            fill: '#ffffff',
-            backgroundColor: '#000000',
-            padding: { left: 10, right: 10 }
-        })
-        .setInteractive()
-        .on('pointerdown', () => this.onTabClicked(label));
-    
-        // Optional: fix height or align/center if needed
-        tab.displayWidth = width;
-    
-        this.tabsContainer.add(tab);
-        this.tabs.push(tab);
-    }
-*/
     createTabLine() {
         // Create a simple line below the tabs to separate them from content
         const width = this.scene.sys.game.config.width;

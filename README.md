@@ -1,4 +1,4 @@
 ## WIP
 
-- "Auto gather" needs to be in shown in inventory (+ 1/s)
+- "Auto gather" needs to be shown in inventory area (+ 1/s)
 - GatherBar needs some reworkimg.

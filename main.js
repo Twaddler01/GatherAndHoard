@@ -138,3 +138,16 @@ window.addEventListener("resize", () => {
     const { width, height } = getGameSize();
     game.scale.resize(width, height);
 });
+
+function setGameSize(w, h) {
+    game.scale.resize(w, h);
+
+    // You might also want to force canvas CSS size
+    game.canvas.style.width = `${w}px`;
+    game.canvas.style.height = `${h}px`;
+}
+
+// DEBUG SCREEN SIZES
+//setGameSize(320, 480); // Small
+//setGameSize(640, 960); // Medium
+//setGameSize(960, 1440); // Large

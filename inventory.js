@@ -39,17 +39,29 @@ export default class Inventory {
         for (const id in gatherCounts) {
             if (id.endsWith('_auto')) continue;
             const value = gatherCounts[id];
+    
             if (this.textObjects[id]) {
                 this.textObjects[id].setText(`${id}: ${value}`);
             } else {
-                // In case new resource is added
-                const offsetY = Object.keys(this.textObjects).length * 24 + 30;
+                // Determine y-position based on last item in container
+                let offsetY = 20; // default padding if it's the first
+                if (this.container.length > 0) {
+                    const last = this.container.getAt(this.container.length - 1);
+                    offsetY = last.y + last.height + 6; // add spacing below last
+                }
+    
                 const newText = this.scene.add.text(10, offsetY, `${id}: ${value}`, {
                     font: '16px Arial',
                     color: '#ccc'
                 });
+    
                 this.container.add(newText);
                 this.textObjects[id] = newText;
+                
+                this.scene.scrollBox.reflowElements(); // adjusts all elements below inventory
+                //const invBounds = this.container.getBounds();
+                //this.scene.scrollBox.reflowElements(invBounds.bottom + 10);
+
             }
         }
     }

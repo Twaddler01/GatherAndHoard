@@ -5,7 +5,7 @@ export default class Layout {
         this.scene = scene;
         this.tabsContainer = null;
         this.contentPages = {}; // Store content containers by tab labels
-        this.tabHeight = 40; // Height of the tabs
+        this.tabHeight = 30; // Height of the tabs
         this.lineThickness = 2; // Thickness of the separator line
         this.tabYPosition = 0; // Y position of tabs
         this.contentBackground = null; // To hold the content background
@@ -35,7 +35,7 @@ export default class Layout {
         });
     
         this.createTabLine();
-        this.createContentBackground();
+        //this.createContentBackground();
     
         this.tabLabels.forEach((label, index) => {
             this.createTabPage(label, 0, this.tabYPosition + this.tabHeight + this.lineThickness);
@@ -43,7 +43,35 @@ export default class Layout {
     
         this.setActiveTab(0);
     }
+
+    createTab(label, x, y, width) {
+        const tabHeight = this.tabHeight;
     
+        // Create background for tab
+        const bg = this.scene.add.rectangle(
+            x + width / 2,               // center X
+            y + tabHeight / 2,           // center Y
+            width,
+            tabHeight,
+            0x000000
+        ).setInteractive();
+    
+        // Create the label text
+        const text = this.scene.add.text(x + 10, y + (tabHeight / 2), label, {
+            font: '20px Arial',
+            fill: '#ffffff'
+        }).setOrigin(0, 0.5); // center text vertically
+    
+        // Add interaction to background instead of just text
+        bg.on('pointerdown', () => this.onTabClicked(label));
+    
+        // Add to tabsContainer
+        this.tabsContainer.add(bg);
+        this.tabsContainer.add(text);
+        this.tabs.push({ bg, text }); // Save both bg and text for styling later
+    }
+
+/*
     createTab(label, x, y, width) {
         const tab = this.scene.add.text(x, y, label, {
             font: '20px Arial',
@@ -60,12 +88,12 @@ export default class Layout {
         this.tabsContainer.add(tab);
         this.tabs.push(tab);
     }
-
+*/
     createTabLine() {
         // Create a simple line below the tabs to separate them from content
         const width = this.scene.sys.game.config.width;
         const line = this.scene.add.graphics();
-        line.lineStyle(this.lineThickness, 0x000000); // Black line with thickness
+        line.lineStyle(this.lineThickness, 0x808080); // Black line with thickness
         line.moveTo(0, this.tabYPosition + this.tabHeight);
         line.lineTo(width, this.tabYPosition + this.tabHeight);
         line.strokePath();
@@ -81,7 +109,7 @@ export default class Layout {
     
         // Create a gray background covering the content area
         this.contentBackground = this.scene.add.graphics();
-        this.contentBackground.fillStyle(0x808080, 1); // Gray color
+        this.contentBackground.fillStyle(0x333333, 1); // Gray color
         this.contentBackground.fillRect(0, contentBackgroundY, width, height);
     
         // Return the Y value for where the content background starts
@@ -122,13 +150,10 @@ export default class Layout {
             }
         });
 
-        // Optionally: Style the active tab (e.g., change color)
-        this.tabsContainer.list.forEach((tab, i) => {
-            tab.setStyle({
-                font: '20px Arial',
-                fill: i === index ? 'yellow' : '#ffffff',
-                backgroundColor: i === index ? '#444444' : '#000000'
-            });
+        // Style the active tab (e.g., change color)
+        this.tabs.forEach((tab, i) => {
+            tab.text.setColor(i === index ? 'yellow' : '#ffffff');
+            tab.bg.fillColor = i === index ? 0x444444 : 0x000000;
         });
     }
 

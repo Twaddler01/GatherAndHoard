@@ -69,6 +69,9 @@ class MainScene extends Phaser.Scene {
     }
 
     create() {
+        //this.cameras.main.setZoom(0.5); // Zooms out to 50%
+        //this.cameras.main.centerOn(0, 0); // or adjust with scrollX/Y
+        
         //this.createUI();
 
         // Create layout
@@ -99,7 +102,7 @@ class MainScene extends Phaser.Scene {
         layout.addToTabPage('Gather', this.scrollBox.container);
 
         this.inventory = new Inventory(this, 0, 0);
-        this.scrollBox.addElement(this.inventory.container, { startY: 10 });
+        this.scrollBox.addElement(this.inventory.container);
 
         const up1_desc = 'Reduces gather points by 1.';
         // Next is added below other items

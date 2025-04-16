@@ -1,4 +1,4 @@
 ## WIP
 
-- Inventory needs revamp and updated values instead of the GatherBar
-
+- "Auto gather" needs to be in shown in inventoey (+ 1/s)
+- GatherBar needs some reworkimg.

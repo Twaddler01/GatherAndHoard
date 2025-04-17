@@ -224,6 +224,9 @@ export default class TileClass {
 }
 
 /*
+// Class call
+this.craftdBoxes = new TileClass(this, 0, 0);
+
 // Craft tab availability
 dataArray
 .filter(craft => craft.available)

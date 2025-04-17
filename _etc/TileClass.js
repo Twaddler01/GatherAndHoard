@@ -1,5 +1,5 @@
 // Data (matches up with dataArray.requirements)
-const gatherCounts = {
+export const gatherCounts = {
     "Pebbles":0,
     "Rocks":0,
     "Twigs":0,
@@ -99,8 +99,8 @@ export const dataArray = [
 
 // const tileBoxes = new TiledBoxes(this, 0, 0, tileData);
 
-export default class TiledBoxes {
-    constructor(scene, x, y, dataArray) {
+export default class TileClass {
+    constructor(scene, x, y) {
         this.scene = scene;
 
         // Stored output manipulation

@@ -7,6 +7,7 @@ export default class GatherBar extends Phaser.GameObjects.Graphics {
 
         this.x = x;
         this.up1_desc = up1_desc;
+        this.barId = title;
         this.title = title;
         this.scene = scene;
         this.totalPoints = points; // Total points
@@ -22,7 +23,7 @@ export default class GatherBar extends Phaser.GameObjects.Graphics {
         gatherCounts[title] = 0;
         this.counterKey = title;
         this.first_check = true;
-        this.nextUpgrade = 5;
+        this.nextUpgrade = parseInt(localStorage.getItem(this.barId + '_nextUpgrade')) || 5;
 
         // Create a container to hold both the bar and the button
         this.container = this.scene.add.container(x, y); // Position of the container
@@ -69,6 +70,12 @@ export default class GatherBar extends Phaser.GameObjects.Graphics {
         
         // Add this container to the scene
         this.scene.add.existing(this.container);
+        
+        if (this.nextUpgrade === 20) {
+            this.totalPoints = 1;
+            this.remainingPoints = 1;
+            this.drawBar2();
+        }
     }
 
     // Upgrade
@@ -96,13 +103,24 @@ export default class GatherBar extends Phaser.GameObjects.Graphics {
         this.bar.fillStyle(this.fillColor, 1);
         this.bar.fillRect(50, 40, fillWidth, this.height);
     }
+    
+    drawBar2() {
+        this.bar.clear();
+        // Re-draw black background
+        this.bar.fillStyle(0x4f4f4f, 1);
+        this.bar.fillRect(50, 40, this.width, this.height);
+        const up2_desc = 'Next Upgrade: Automatically gather +' + (gatherCounts[this.counterKey + '_auto'] + 1) + ' ' + this.counterKey + ' per second.';
+        this.upgradeInfo.setText(up2_desc);
+    }
 
     checkUpgradeAvailability() {
+        //console.log(this.nextUpgrade);
         // HP upgrade (5)
-        if (gatherCounts[this.counterKey] >= this.nextUpgrade && this.upgradeIconLocked && this.totalPoints > 1) {
+        if (gatherCounts[this.counterKey] >= this.nextUpgrade && this.upgradeIconLocked && this.totalPoints > 1 && this.nextUpgrade !== 20) {
             this.activatedUpgradeIcon(1);
-        } else if (this.totalPoints <= 1) {
+        } else if (this.totalPoints <= 1 || this.nextUpgrade === 20) {
             this.nextUpgrade = 20;
+localStorage.setItem(this.barId + '_nextUpgrade', this.nextUpgrade);
             this.nextUpgradeTxt.setText('Next Req: ' + this.nextUpgrade);
             const up2_desc = 'Next Upgrade: Automatically gather +' + (gatherCounts[this.counterKey + '_auto'] + 1) + ' ' + this.counterKey + ' per second.';
             this.upgradeInfo.setText(up2_desc);
@@ -275,12 +293,8 @@ export default class GatherBar extends Phaser.GameObjects.Graphics {
                     // Start over
                     this.drawBar();
                 } else {
-                    this.bar.clear();
-                    // Re-draw black background
-                    this.bar.fillStyle(0x4f4f4f, 1);
-                    this.bar.fillRect(50, 40, this.width, this.height);
-                    const up2_desc = 'Next Upgrade: Automatically gather +' + (gatherCounts[this.counterKey + '_auto'] + 1) + ' ' + this.counterKey + ' per second.';
-                    this.upgradeInfo.setText(up2_desc);
+                    // Redraw bar for nextUpgrade
+                    this.drawBar2();
                 }
                 
                 // Check if upgrade should be unlocked

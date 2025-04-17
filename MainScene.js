@@ -6,6 +6,7 @@ import TiledBoxes from './tiledBoxes.js';
 import Inventory from './inventory.js';
 
 export const gatherCounts = {};
+loadGatherCounts();
 
 export const upgradeData = [
     {
@@ -69,6 +70,12 @@ class MainScene extends Phaser.Scene {
     }
 
     create() {
+        
+        // Button debug action
+        document.getElementById('tempAction').addEventListener("click", () => {
+            console.log(JSON.stringify(gatherCounts));
+        });
+    
         //this.cameras.main.setZoom(0.5); // Zooms out to 50%
         //this.cameras.main.centerOn(0, 0); // or adjust with scrollX/Y
         
@@ -176,5 +183,45 @@ class MainScene extends Phaser.Scene {
 
     }
 }
+
+// Export functions
+// Throttle timer reference
+let gatherSaveTimeout = null;
+
+// Save to localStorage (called manually or on unload)
+export function saveGatherCounts() {
+  localStorage.setItem('gatherCounts', JSON.stringify(gatherCounts));
+}
+
+// Load from localStorage (call this once at app start)
+export function loadGatherCounts() {
+  const saved = localStorage.getItem('gatherCounts');
+  if (saved) {
+    const parsed = JSON.parse(saved);
+    Object.assign(gatherCounts, parsed); // Merge saved values
+  }
+
+  // Hook into window unload to save one last time
+  window.addEventListener('beforeunload', () => {
+    saveGatherCounts();
+  });
+}
+
+// Throttled saving (save at most every 3 seconds)
+function saveGatherCountsThrottled() {
+  if (gatherSaveTimeout) return;
+
+  gatherSaveTimeout = setTimeout(() => {
+    saveGatherCounts();
+    gatherSaveTimeout = null;
+  }, 3000);
+}
+
+// Update function used throughout app
+export function updateGatherCount(item, amount = 1) {
+  gatherCounts[item] = (gatherCounts[item] || 0) + amount;
+  saveGatherCountsThrottled();
+}
+
 // Export default MainScene;
 export default MainScene;

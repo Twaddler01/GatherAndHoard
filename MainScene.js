@@ -5,8 +5,20 @@ import ShowUpgradeOpts from './showUpgradeOpts.js';
 import TiledBoxes from './tiledBoxes.js';
 import Inventory from './inventory.js';
 
-export const gatherCounts = {};
+export const gatherCounts = {
+    'Pebbles': 0,
+    'Twigs': 0,
+    'Leaves': 0,
+    'Pebbles_auto': 0,
+    'Twigs_auto': 0,
+    'Leaves_auto': 0,
+};
 loadGatherCounts();
+
+// Setup unload listener
+window.addEventListener('beforeunload', () => {
+    saveGatherCounts();
+});
 
 export const upgradeData = [
     {
@@ -129,6 +141,7 @@ class MainScene extends Phaser.Scene {
             Twigs: this.gatherBar2,
             Leaves: this.gatherBar3,
         };
+        localStorage.setItem("upgradeBarKeys", JSON.stringify(Object.keys(this.upgradeBars)));        console.log(JSON.stringify(Object.keys(this.upgradeBars)));
 
         // CRAFT
         this.craftScroll = new ScrollingBox(this, 0, 0, this.scale.width, this.scale.height, "", {
@@ -144,9 +157,6 @@ class MainScene extends Phaser.Scene {
         this.craftScroll.addElement(this.craftdBoxes.container);
 
         // UPGRADE
-        //this.upgrade = new ShowUpgradeOpts(this, 0, 0);
-        //layout.addToTabPage('Upgrade', this.upgrade.container);
-
         this.upgradeScroll = new ScrollingBox(this, 0, 0, this.scale.width, this.scale.height, "", {
             bgColor: 0x000000,  // Dark gray background for testing
             fontFamily: 'Arial',
@@ -158,6 +168,12 @@ class MainScene extends Phaser.Scene {
         
         this.upgrade = new ShowUpgradeOpts(this, 0, 0);
         this.upgradeScroll.addElement(this.upgrade.container);
+
+loadUpgradeBars(this);
+this.gatherBar.checkUpgradeAvailability();
+this.gatherBar2.checkUpgradeAvailability();
+this.gatherBar3.checkUpgradeAvailability();
+this.inventory.updateInventory();
 
         // tests
         //const NEWgatherBar = new GatherBar(this, 'NEW TEST', 40, 100, 5); // Set y=0 for stacking
@@ -190,7 +206,7 @@ let gatherSaveTimeout = null;
 
 // Save to localStorage (called manually or on unload)
 export function saveGatherCounts() {
-  localStorage.setItem('gatherCounts', JSON.stringify(gatherCounts));
+    localStorage.setItem('gatherCounts', JSON.stringify(gatherCounts));    // Save just the keys, not the full objects
 }
 
 // Load from localStorage (call this once at app start)
@@ -198,13 +214,27 @@ export function loadGatherCounts() {
   const saved = localStorage.getItem('gatherCounts');
   if (saved) {
     const parsed = JSON.parse(saved);
-    Object.assign(gatherCounts, parsed); // Merge saved values
+    Object.assign(gatherCounts, parsed);
   }
+}
 
-  // Hook into window unload to save one last time
-  window.addEventListener('beforeunload', () => {
-    saveGatherCounts();
-  });
+export function loadUpgradeBars(scene) {
+  const savedKeys = JSON.parse(localStorage.getItem("upgradeBarKeys"));
+  const up1_desc = 'Reduces gather points by 1.';
+  if (savedKeys) {
+    for (const key of savedKeys) {
+      if (!scene.upgradeBars[key]) {
+        const bar = new GatherBar(scene, key, 40, 100, 5, up1_desc);
+        scene.upgradeBars[key] = bar;
+        scene.scrollBox.addElement(bar.container);
+      }
+    }
+  }
+}
+
+export function saveUpgradeBars(scene) {
+  const keys = Object.keys(scene.upgradeBars);
+  localStorage.setItem("upgradeBarKeys", JSON.stringify(keys));
 }
 
 // Throttled saving (save at most every 3 seconds)
@@ -219,7 +249,9 @@ function saveGatherCountsThrottled() {
 
 // Update function used throughout app
 export function updateGatherCount(item, amount = 1) {
-  gatherCounts[item] = (gatherCounts[item] || 0) + amount;
+    if (item) {
+        gatherCounts[item] = (gatherCounts[item] || 0) + amount;
+    }
   saveGatherCountsThrottled();
 }
 

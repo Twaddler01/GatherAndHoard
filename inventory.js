@@ -29,6 +29,8 @@ export default class Inventory {
         const col3X = (panelWidth / 3) * 2;
     
         for (const id in gatherCounts) {
+            if (id.endsWith('_auto')) continue;
+
             const value = gatherCounts[id];
     
             const idText = this.scene.add.text(col1X, offsetY, id, {

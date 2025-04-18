@@ -1,4 +1,4 @@
-import { gatherCounts, upgradeData } from './MainScene.js';
+import { updateGatherCount, gatherCounts, upgradeData } from './MainScene.js';
 import { dataArray } from './tiledBoxes.js';
 
 export default class GatherBar extends Phaser.GameObjects.Graphics {
@@ -19,8 +19,8 @@ export default class GatherBar extends Phaser.GameObjects.Graphics {
         this.buttonSpacing = 10; // Spacing between the bar and the button
 
         // Variables
-        gatherCounts[title + '_auto'] = 0;
-        gatherCounts[title] = 0;
+        //gatherCounts[title + '_auto'] = 0;
+        //gatherCounts[title] = 0;
         this.counterKey = title;
         this.first_check = true;
         this.nextUpgrade = parseInt(localStorage.getItem(this.barId + '_nextUpgrade')) || 5;
@@ -75,6 +75,11 @@ export default class GatherBar extends Phaser.GameObjects.Graphics {
             this.totalPoints = 1;
             this.remainingPoints = 1;
             this.drawBar2();
+            //this.checkUpgradeAvailability();
+        } else {
+            //this.upgradeIcon.destroy();
+            //this.showUpgrade();
+            //this.activatedUpgradeIcon(1);
         }
     }
 
@@ -113,8 +118,7 @@ export default class GatherBar extends Phaser.GameObjects.Graphics {
         this.upgradeInfo.setText(up2_desc);
     }
 
-    checkUpgradeAvailability() {
-        //console.log(this.nextUpgrade);
+    checkUpgradeAvailability() {        //console.log(this.nextUpgrade);
         // HP upgrade (5)
         if (gatherCounts[this.counterKey] >= this.nextUpgrade && this.upgradeIconLocked && this.totalPoints > 1 && this.nextUpgrade !== 20) {
             this.activatedUpgradeIcon(1);

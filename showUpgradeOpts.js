@@ -1,6 +1,6 @@
 import GatherBar from './gatherBar.js'; 
 import ScrollingBox from './scrollingBox.js';
-import { gatherCounts, upgradeData } from './MainScene.js';
+import { gatherCounts, upgradeData, saveUpgradeBars } from './MainScene.js';
 
 export default class ShowUpgradeOpts {
     constructor(scene, x, y) {
@@ -69,6 +69,7 @@ export default class ShowUpgradeOpts {
                     const newBar = new GatherBar(this.scene, upgrade.to, 40, 100, 5, this.scene.gatherBar.up1_desc); // new GatherBar
                     this.scene.upgradeBars[upgrade.to] = newBar;
                     this.scene.scrollBox.addElement(newBar.container);
+                    saveUpgradeBars(this.scene);
                 
                     gatherCounts[upgrade.req_id] -= upgrade.req_cnt;
                     

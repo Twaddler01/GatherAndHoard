@@ -85,7 +85,8 @@ class MainScene extends Phaser.Scene {
         
         // Button debug action
         document.getElementById('tempAction').addEventListener("click", () => {
-            console.log(JSON.stringify(gatherCounts));
+            //console.log(JSON.stringify(gatherCounts));
+            console.log(Object.keys(this.upgradeBars));
         });
     
         //this.cameras.main.setZoom(0.5); // Zooms out to 50%
@@ -123,6 +124,53 @@ class MainScene extends Phaser.Scene {
         this.inventory = new Inventory(this, 0, 0);
         this.scrollBox.addElement(this.inventory.container);
 
+
+const up1_desc = 'Reduces gather points by 1.';
+
+// Always create the 3 default bars
+this.gatherBar = new GatherBar(this, 'Pebbles', 40, 100, 5, up1_desc);
+this.scrollBox.addElement(this.gatherBar.container);
+
+this.gatherBar2 = new GatherBar(this, 'Twigs', 40, 100, 5, up1_desc);
+this.scrollBox.addElement(this.gatherBar2.container);
+
+this.gatherBar3 = new GatherBar(this, 'Leaves', 40, 100, 5, up1_desc);
+this.scrollBox.addElement(this.gatherBar3.container);
+
+// Store references to the defaults
+this.upgradeBars = {
+    Pebbles: this.gatherBar,
+    Twigs: this.gatherBar2,
+    Leaves: this.gatherBar3,
+};
+
+// Store keys only if not present
+if (!localStorage.getItem("upgradeBarKeys")) {
+    localStorage.setItem("upgradeBarKeys", JSON.stringify(Object.keys(this.upgradeBars)));
+}
+
+// Retrieve full list of upgradeBar keys from localStorage
+const storedKeys = JSON.parse(localStorage.getItem("upgradeBarKeys") || "[]");
+
+// Check if any stored keys are missing from current upgradeBars
+for (const key of storedKeys) {
+    if (!this.upgradeBars[key]) {
+        const saved = JSON.parse(localStorage.getItem(key));
+
+        const newBar = new GatherBar(this, key, 40, 100, 5, up1_desc);
+        this.scrollBox.addElement(newBar.container);
+        this.upgradeBars[key] = newBar;
+    }
+}
+
+
+
+
+
+
+
+
+/*
         const up1_desc = 'Reduces gather points by 1.';
         // Next is added below other items
         this.gatherBar = new GatherBar(this, 'Pebbles', 40, 100, 5, up1_desc); // Set y=0 for stacking
@@ -136,13 +184,20 @@ class MainScene extends Phaser.Scene {
         this.scrollBox.addElement(this.gatherBar3.container);
 
         // Store references
-        this.upgradeBars = {
-            Pebbles: this.gatherBar,
-            Twigs: this.gatherBar2,
-            Leaves: this.gatherBar3,
-        };
-        localStorage.setItem("upgradeBarKeys", JSON.stringify(Object.keys(this.upgradeBars)));        console.log(JSON.stringify(Object.keys(this.upgradeBars)));
+this.upgradeBars = {
+    Pebbles: this.gatherBar,
+    Twigs: this.gatherBar2,
+    Leaves: this.gatherBar3,
+};
 
+// Only set if not already in localStorage
+const existingKeys = localStorage.getItem("upgradeBarKeys");
+if (!existingKeys) {
+    localStorage.setItem("upgradeBarKeys", JSON.stringify(Object.keys(this.upgradeBars)));
+}*/
+let test = localStorage.getItem("upgradeBarKeys");
+console.log(test);
+        
         // CRAFT
         this.craftScroll = new ScrollingBox(this, 0, 0, this.scale.width, this.scale.height, "", {
             bgColor: 0x000000,  // Dark gray background for testing
@@ -235,6 +290,8 @@ export function loadUpgradeBars(scene) {
 export function saveUpgradeBars(scene) {
   const keys = Object.keys(scene.upgradeBars);
   localStorage.setItem("upgradeBarKeys", JSON.stringify(keys));
+  console.log('saveUpgradeBars...');
+  console.log(JSON.stringify(keys));
 }
 
 // Throttled saving (save at most every 3 seconds)
@@ -243,6 +300,7 @@ function saveGatherCountsThrottled() {
 
   gatherSaveTimeout = setTimeout(() => {
     saveGatherCounts();
+    saveUpgradeBars(this);
     gatherSaveTimeout = null;
   }, 3000);
 }

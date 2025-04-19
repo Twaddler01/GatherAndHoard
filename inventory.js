@@ -29,7 +29,14 @@ export default class Inventory {
         const col3X = (panelWidth / 3) * 2;
     
         for (const id in gatherCounts) {
-            if (id.endsWith('_auto')) continue;
+
+if (id.endsWith('_auto')) {
+        // New logic: update _auto values from localStorage if available
+        const storedValue = localStorage.getItem(id);
+        if (storedValue !== null) {
+            gatherCounts[id] = parseFloat(storedValue); // or parseInt if you store integers
+        }
+    }
 
             const value = gatherCounts[id];
     
@@ -69,8 +76,17 @@ export default class Inventory {
         let index = 0;
     
         for (const id in gatherCounts) {
-            if (id.endsWith('_auto')) continue;
-    
+
+//if (id.endsWith('_auto')) continue;
+if (id.endsWith('_auto')) {
+        // New logic: update _auto values from localStorage if available
+        const storedValue = localStorage.getItem(id);
+        if (storedValue !== null) {
+            gatherCounts[id] = parseFloat(storedValue); // or parseInt if you store integers
+        }
+    }
+
+
             const value = gatherCounts[id];
             const gainRate = gatherCounts[id + '_auto'] ?? 0;
     

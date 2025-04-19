@@ -80,6 +80,20 @@ export default class GatherBar extends Phaser.GameObjects.Graphics {
             //this.upgradeIcon.destroy();
             //this.showUpgrade();
             //this.activatedUpgradeIcon(1);
+            //this.bar.clear();
+        }
+        
+        // Restore auto
+        this.restoreAutoGather();
+        // Restore points
+        if (gatherCounts[this.counterKey + '_pts']) {
+            this.totalPoints = gatherCounts[this.counterKey + '_pts'];
+            this.remainingPoints = this.totalPoints;
+        }
+        // Add in counts if not present
+        if (!gatherCounts[this.counterKey]) {
+            gatherCounts[this.counterKey + '_auto'] = 0;
+            gatherCounts[this.counterKey] = 0;
         }
     }
 
@@ -118,13 +132,14 @@ export default class GatherBar extends Phaser.GameObjects.Graphics {
         this.upgradeInfo.setText(up2_desc);
     }
 
-    checkUpgradeAvailability() {        //console.log(this.nextUpgrade);
+    checkUpgradeAvailability() {        
         // HP upgrade (5)
         if (gatherCounts[this.counterKey] >= this.nextUpgrade && this.upgradeIconLocked && this.totalPoints > 1 && this.nextUpgrade !== 20) {
             this.activatedUpgradeIcon(1);
         } else if (this.totalPoints <= 1 || this.nextUpgrade === 20) {
+            if (gatherCounts[this.counterKey + '_pts']) delete gatherCounts[this.counterKey + '_pts'];
             this.nextUpgrade = 20;
-localStorage.setItem(this.barId + '_nextUpgrade', this.nextUpgrade);
+            localStorage.setItem(this.barId + '_nextUpgrade', this.nextUpgrade);
             this.nextUpgradeTxt.setText('Next Req: ' + this.nextUpgrade);
             const up2_desc = 'Next Upgrade: Automatically gather +' + (gatherCounts[this.counterKey + '_auto'] + 1) + ' ' + this.counterKey + ' per second.';
             this.upgradeInfo.setText(up2_desc);
@@ -232,6 +247,8 @@ localStorage.setItem(this.barId + '_nextUpgrade', this.nextUpgrade);
             if (type === 1) {
                 // Upgrade action
                 this.totalPoints -= 1;
+                ////
+                gatherCounts[this.counterKey + '_pts'] = this.totalPoints;
                
                 gatherCounts[this.counterKey] -= 5;
                 this.scene.inventory.updateInventory();
@@ -242,8 +259,11 @@ localStorage.setItem(this.barId + '_nextUpgrade', this.nextUpgrade);
                 gatherCounts[this.counterKey] -= 20;
                 gatherCounts[this.counterKey + '_auto'] += 1;
                 this.scene.inventory.updateInventory();
+                this.restoreAutoGather();
+                /*gatherCounts[this.counterKey] -= 20;
+                gatherCounts[this.counterKey + '_auto'] += 1;
+                this.scene.inventory.updateInventory();
 
-    
                 // Create the autoText display
                 if (!this.autoText) {
                     this.autoText = this.scene.add.text(this.x, this.height / 2 + 28, 'Auto: ' + gatherCounts[this.counterKey + '_auto'] + '/sec', {
@@ -266,7 +286,7 @@ localStorage.setItem(this.barId + '_nextUpgrade', this.nextUpgrade);
                         callbackScope: this,
                         loop: true
                     });
-                }
+                }*/
             }
             
             this.upgradeIcon.destroy();
@@ -274,6 +294,34 @@ localStorage.setItem(this.barId + '_nextUpgrade', this.nextUpgrade);
             
             this.checkUpgradeAvailability();
         });
+    }
+
+    restoreAutoGather() {
+        if (gatherCounts[this.counterKey + '_auto']) {
+            // Create the autoText display
+            if (!this.autoText) {
+                this.autoText = this.scene.add.text(this.x, this.height / 2 + 28, 'Auto: ' + gatherCounts[this.counterKey + '_auto'] + '/sec', {
+                    font: '20px Arial',
+                    padding: { left: 10, right: 10 }
+                });
+                this.container.add(this.autoText);
+            } else {
+                this.autoText.setText('Auto: ' + gatherCounts[this.counterKey + '_auto'] + '/sec');
+            }
+            // Start auto-gathering if not already started
+            if (!this.autoGatherInterval) {
+                this.autoGatherInterval = this.scene.time.addEvent({
+                    delay: 1000,
+                    callback: () => {
+                        gatherCounts[this.counterKey] += gatherCounts[this.counterKey + '_auto'];
+                        this.scene.inventory.updateInventory();
+                        this.checkUpgradeAvailability();
+                    },
+                    callbackScope: this,
+                    loop: true
+                });
+            }
+        }
     }
 
     onTap() {
@@ -292,7 +340,8 @@ localStorage.setItem(this.barId + '_nextUpgrade', this.nextUpgrade);
                 this.scene.inventory.updateInventory();
 
                 this.remainingPoints = this.totalPoints;
-
+                //// if (gatherCounts[this.counterKey + '_pts']) gatherCounts[this.counterKey + '_pts'] = this.totalPoints;
+                
                 if (this.totalPoints > 1) {
                     // Start over
                     this.drawBar();

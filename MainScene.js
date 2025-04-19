@@ -86,7 +86,12 @@ class MainScene extends Phaser.Scene {
         // Button debug action
         document.getElementById('tempAction').addEventListener("click", () => {
             //console.log(JSON.stringify(gatherCounts));
-            console.log(Object.keys(this.upgradeBars));
+            //console.log(Object.keys(this.upgradeBars));
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                const value = localStorage.getItem(key);
+                console.log(`${key}: ${value}`);
+            }
         });
     
         //this.cameras.main.setZoom(0.5); // Zooms out to 50%

@@ -30,13 +30,15 @@ export default class Inventory {
     
         for (const id in gatherCounts) {
 
-if (id.endsWith('_auto')) {
-        // New logic: update _auto values from localStorage if available
-        const storedValue = localStorage.getItem(id);
-        if (storedValue !== null) {
-            gatherCounts[id] = parseFloat(storedValue); // or parseInt if you store integers
-        }
-    }
+            if (id.endsWith('_auto')) {
+                // New logic: update _auto values from localStorage if available
+                const storedValue = localStorage.getItem(id);
+                if (storedValue !== null) {
+                    gatherCounts[id] = parseFloat(storedValue); // or parseInt if you store integers
+                }
+            }
+            
+            if (id.includes('_')) continue;
 
             const value = gatherCounts[id];
     
@@ -77,15 +79,16 @@ if (id.endsWith('_auto')) {
     
         for (const id in gatherCounts) {
 
-//if (id.endsWith('_auto')) continue;
-if (id.endsWith('_auto')) {
-        // New logic: update _auto values from localStorage if available
-        const storedValue = localStorage.getItem(id);
-        if (storedValue !== null) {
-            gatherCounts[id] = parseFloat(storedValue); // or parseInt if you store integers
-        }
-    }
+            //if (id.endsWith('_auto')) continue;
+            if (id.endsWith('_auto')) {
+                // New logic: update _auto values from localStorage if available
+                const storedValue = localStorage.getItem(id);
+                if (storedValue !== null) {
+                    gatherCounts[id] = parseFloat(storedValue); // or parseInt if you store integers
+                }
+            }
 
+            if (id.includes('_')) continue;
 
             const value = gatherCounts[id];
             const gainRate = gatherCounts[id + '_auto'] ?? 0;

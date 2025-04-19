@@ -35,8 +35,8 @@ export default class ShowUpgradeOpts {
         let visibleIndex = 0;
     
         upgradeData.forEach((upgrade) => {
-            if (!upgrade.available) return;
-    
+            if (!upgrade.available || upgrade.to in gatherCounts) return;
+            
             const boxWidth = 160;
             const boxHeight = 150;
             
@@ -70,7 +70,6 @@ export default class ShowUpgradeOpts {
                     this.scene.upgradeBars[upgrade.to] = newBar;
                     this.scene.scrollBox.addElement(newBar.container);
                     
-                    ////
                     saveUpgradeBars(this.scene);
                 
                     gatherCounts[upgrade.req_id] -= upgrade.req_cnt;
@@ -82,47 +81,11 @@ export default class ShowUpgradeOpts {
                         bar.showUpgrade();
                         bar.checkUpgradeAvailability();
                     });
-                    let test = localStorage.getItem("upgradeBarKeys");
-                    console.log(test);
+                    //let test = localStorage.getItem("upgradeBarKeys");
+                    //console.log(test);
                 } else {
                     console.log('Not enough materials...');
                 }
-
-
-
-
-
-
-/*
-                if (playerAmount >= upgrade.req_cnt) {
-            
-                    console.log('Upgrading:' + upgrade.id);
-                
-                    const fromKey = upgrade.from;
-                    const toKey = upgrade.to;
-                
-                
-                    const fromBar = this.scene.upgradeBars[fromKey]; // GatherBar
-                    const toBar = new GatherBar(this.scene, toKey, 40, 100, 5, this.scene.gatherBar.up1_desc); // new GatherBar
-                
-                    if (fromBar && toBar) {
-                        this.scene.scrollBox.replaceElement(fromBar.container, toBar.container);
-                
-                        fromBar.destroy(); // Properly destroy old bar
-                
-                        // Update reference to full GatherBar instance
-                        delete this.scene.upgradeBars[fromKey];
-                        this.scene.upgradeBars[toKey] = toBar;
-                
-                        gatherCounts[upgrade.req_id] -= upgrade.req_cnt;
-                        this.scene.inventory.updateInventory();
-                
-                        this.removeUpgrade(upgrade);
-                    }
-                } else {
-                    console.log('Not enough materials...');
-                }
-*/
             });
     
             this.upgradeButtons[upgrade.id] = upgradeBtn;

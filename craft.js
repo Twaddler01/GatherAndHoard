@@ -108,13 +108,14 @@ export default class Craft {
         this.spacingX = 170; // boxWidth +10
         this.spacingY = 170; // boxHeight + 10
 
-        this.container = scene.add.container();
+        this.inventoryContainer = scene.add.container(x, 0);
+        this.container = scene.add.container(x, 100);
 
         this.setupStorage();
         this.setupBoxes();
 
+// DEBUG
 const activeUpgrades = this.craftStore.getActiveUpgrades(craftData);
-
 activeUpgrades.forEach(upg => {
     console.log(`${upg.title} is active at level ${upg.amt}`);
 });
@@ -160,7 +161,7 @@ activeUpgrades.forEach(upg => {
     
     setupBoxes() {
         this.container.removeAll(true); // clear and destroy existing buttons
-    
+
         const availableWidth = this.scene.scale.width; // or a fixed width container if you're using one
         const boxWidth = 160;
         const addedBoxHeight = 30; // Extra height above square (boxWidth)
@@ -207,13 +208,12 @@ activeUpgrades.forEach(upg => {
                                 });
                             }
                             box.destroy();
-                            //// flag needs remove
-                            //data.available = false;
                             this.setupBoxes();
                             this.scene.inventory.updateInventory();
                             Object.values(this.scene.upgradeBars).forEach(bar => {
                                 bar.checkUpgradeAvailability();
                             });
+                            this.scene.craftedItemsDisplay.updateCraftedItems();
                         }
                     });
                 } else {
@@ -263,6 +263,8 @@ activeUpgrades.forEach(upg => {
             this.container.add(box);
             visibleIndex++;
         });
+        
+        //this.scene.craftedItemsDisplay.updateCraftedItems();
     }
 
     removeBox(box) {

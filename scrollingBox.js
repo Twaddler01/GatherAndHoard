@@ -10,6 +10,9 @@ export default class ScrollingBox {
     this.scrollY = 0;
     this.children = [];
 
+    this.config = config;
+    this.startY = config.startY ?? 10; // Defaults to 0 if not provided
+
     // For stacking
     this.stackY = 0; // current stack offset
 
@@ -76,7 +79,7 @@ export default class ScrollingBox {
         : this.height;
 
     // Touch scroll
-    this.startY = 0;
+    //this.startY = 0;
     this.dragging = false;
     this.textStartY = 0;
 
@@ -136,8 +139,9 @@ export default class ScrollingBox {
         this.container.add(gameObject);
         this.children.push(gameObject);
         gameObject.setMask(this.mask);
-    
+        
         this.reflowElements(); // Always reflow after adding
+        
         return gameObject;
     }
     
@@ -149,8 +153,8 @@ export default class ScrollingBox {
         this.reflowElements(); // Let reflow handle stackY
     }
     
-    reflowElements(spacing = 10, startY = 10) {
-        let y = startY;
+    reflowElements(spacing = 10) {
+        let y = this.startY;
     
         const stackable = this.children.filter(c => c !== this.textObject && c !== this.invisibleText);
     

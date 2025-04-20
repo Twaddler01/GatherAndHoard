@@ -1,9 +1,10 @@
 import Layout from './layout.js'; // Import the Layout class
 import GatherBar from './gatherBar.js';  // Import the GatherBar class
+import Inventory from './inventory.js';
 import ScrollingBox from './scrollingBox.js';
 import ShowUpgradeOpts from './showUpgradeOpts.js';
 import Craft from './craft.js';
-import Inventory from './inventory.js';
+import CraftedItemsDisplay from './classes/CraftedItemsDisplay.js';
 
 export const gatherCounts = {
     'Pebbles': 0,
@@ -168,6 +169,7 @@ class MainScene extends Phaser.Scene {
 
         // CRAFT
         this.craftScroll = new ScrollingBox(this, 0, 0, this.scale.width, this.scale.height, "", {
+            startY: 100,
             bgColor: 0x000000,  // Dark gray background for testing
             fontFamily: 'Arial',
             fontSize: '18px',
@@ -176,8 +178,12 @@ class MainScene extends Phaser.Scene {
         
         layout.addToTabPage('Craft', this.craftScroll.container);
 
-        this.craftdBoxes = new Craft(this, 0, 0);
-        this.craftScroll.addElement(this.craftdBoxes.container);
+        this.craftedItemsDisplay = new CraftedItemsDisplay(this, 0, 0);
+        this.craftScroll.addElement(this.craftedItemsDisplay.container);
+
+        this.craftBoxes = new Craft(this, 0, 0);
+        this.craftScroll.addElement(this.craftBoxes.container);
+        //this.craftScroll.reflowElements(10, 100);
 
         // UPGRADE
         this.upgradeScroll = new ScrollingBox(this, 0, 0, this.scale.width, this.scale.height, "", {

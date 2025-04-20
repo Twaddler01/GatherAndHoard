@@ -182,17 +182,17 @@ export default class GatherBar extends Phaser.GameObjects.Graphics {
 
         // Craft tab availability
         craftData.forEach(craft => {
-            if (this.scene.craftdBoxes.craftStore.isHidden(craft.num, craft.max)) return;
+            if (this.scene.craftBoxes.craftStore.isHidden(craft.num, craft.max)) return;
             
-            const craftBtn = this.scene.craftdBoxes.getTileButton(craft.title);
-            const craftReqLabel = this.scene.craftdBoxes.getTileColor(craft.title + '_lbl');
+            const craftBtn = this.scene.craftBoxes.getTileButton(craft.title);
+            const craftReqLabel = this.scene.craftBoxes.getTileColor(craft.title + '_lbl');
         
             if (craftBtn) {
                 let allMet = true;
         
                 craft.requirements.forEach((req, i) => {
                     const reqKey = `${req.id}_req_${i}`;
-                    const costText = this.scene.craftdBoxes.getTileColor(reqKey);
+                    const costText = this.scene.craftBoxes.getTileColor(reqKey);
                     const currentCount = gatherCounts[req.id] || 0;
         
                     if (currentCount >= req.count) { // TEST req.count <> 10

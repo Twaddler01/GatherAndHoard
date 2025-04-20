@@ -1,5 +1,5 @@
 import { updateGatherCount, gatherCounts, upgradeData } from './MainScene.js';
-import { dataArray } from './tiledBoxes.js';
+import { craftData } from './craft.js';
 
 export default class GatherBar extends Phaser.GameObjects.Graphics {
     constructor(scene, title, x, y, points, up1_desc) {
@@ -181,9 +181,9 @@ export default class GatherBar extends Phaser.GameObjects.Graphics {
         });
 
         // Craft tab availability
-        dataArray
-        .filter(craft => craft.available)
-        .forEach(craft => {
+        craftData.forEach(craft => {
+            if (this.scene.craftdBoxes.craftStore.isHidden(craft.num, craft.max)) return;
+            
             const craftBtn = this.scene.craftdBoxes.getTileButton(craft.title);
             const craftReqLabel = this.scene.craftdBoxes.getTileColor(craft.title + '_lbl');
         

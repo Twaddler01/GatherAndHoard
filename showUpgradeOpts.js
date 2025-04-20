@@ -35,7 +35,7 @@ export default class ShowUpgradeOpts {
         let visibleIndex = 0;
     
         upgradeData.forEach((upgrade) => {
-            if (!upgrade.available || upgrade.to in gatherCounts) return;
+            if (upgrade.to in gatherCounts) return;
             
             const boxWidth = 160;
             const boxHeight = 150;

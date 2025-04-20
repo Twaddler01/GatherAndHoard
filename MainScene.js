@@ -2,7 +2,7 @@ import Layout from './layout.js'; // Import the Layout class
 import GatherBar from './gatherBar.js';  // Import the GatherBar class
 import ScrollingBox from './scrollingBox.js';
 import ShowUpgradeOpts from './showUpgradeOpts.js';
-import TiledBoxes from './tiledBoxes.js';
+import Craft from './craft.js';
 import Inventory from './inventory.js';
 
 export const gatherCounts = {
@@ -129,80 +129,43 @@ class MainScene extends Phaser.Scene {
         this.inventory = new Inventory(this, 0, 0);
         this.scrollBox.addElement(this.inventory.container);
 
-
-const up1_desc = 'Reduces gather points by 1.';
-
-// Always create the 3 default bars
-this.gatherBar = new GatherBar(this, 'Pebbles', 40, 100, 5, up1_desc);
-this.scrollBox.addElement(this.gatherBar.container);
-
-this.gatherBar2 = new GatherBar(this, 'Twigs', 40, 100, 5, up1_desc);
-this.scrollBox.addElement(this.gatherBar2.container);
-
-this.gatherBar3 = new GatherBar(this, 'Leaves', 40, 100, 5, up1_desc);
-this.scrollBox.addElement(this.gatherBar3.container);
-
-// Store references to the defaults
-this.upgradeBars = {
-    Pebbles: this.gatherBar,
-    Twigs: this.gatherBar2,
-    Leaves: this.gatherBar3,
-};
-
-// Store keys only if not present
-if (!localStorage.getItem("upgradeBarKeys")) {
-    localStorage.setItem("upgradeBarKeys", JSON.stringify(Object.keys(this.upgradeBars)));
-}
-
-// Retrieve full list of upgradeBar keys from localStorage
-const storedKeys = JSON.parse(localStorage.getItem("upgradeBarKeys") || "[]");
-
-// Check if any stored keys are missing from current upgradeBars
-for (const key of storedKeys) {
-    if (!this.upgradeBars[key]) {
-        const saved = JSON.parse(localStorage.getItem(key));
-
-        const newBar = new GatherBar(this, key, 40, 100, 5, up1_desc);
-        this.scrollBox.addElement(newBar.container);
-        this.upgradeBars[key] = newBar;
-    }
-}
-
-
-
-
-
-
-
-
-/*
         const up1_desc = 'Reduces gather points by 1.';
-        // Next is added below other items
-        this.gatherBar = new GatherBar(this, 'Pebbles', 40, 100, 5, up1_desc); // Set y=0 for stacking
+        // Always create the 3 default bars
+        this.gatherBar = new GatherBar(this, 'Pebbles', 40, 100, 5, up1_desc);
         this.scrollBox.addElement(this.gatherBar.container);
         
-        // Adds below gatherBar
-        this.gatherBar2 = new GatherBar(this, 'Twigs', 40, 100, 5, up1_desc); // Set y=0 for stacking
+        this.gatherBar2 = new GatherBar(this, 'Twigs', 40, 100, 5, up1_desc);
         this.scrollBox.addElement(this.gatherBar2.container);
         
-        this.gatherBar3 = new GatherBar(this, 'Leaves', 40, 100, 5, up1_desc); // Set y=0 for stacking
+        this.gatherBar3 = new GatherBar(this, 'Leaves', 40, 100, 5, up1_desc);
         this.scrollBox.addElement(this.gatherBar3.container);
-
-        // Store references
-this.upgradeBars = {
-    Pebbles: this.gatherBar,
-    Twigs: this.gatherBar2,
-    Leaves: this.gatherBar3,
-};
-
-// Only set if not already in localStorage
-const existingKeys = localStorage.getItem("upgradeBarKeys");
-if (!existingKeys) {
-    localStorage.setItem("upgradeBarKeys", JSON.stringify(Object.keys(this.upgradeBars)));
-}*/
-let test = localStorage.getItem("upgradeBarKeys");
-console.log(test);
         
+        // Store references to the defaults
+        this.upgradeBars = {
+            Pebbles: this.gatherBar,
+            Twigs: this.gatherBar2,
+            Leaves: this.gatherBar3,
+        };
+        
+        // Store keys only if not present
+        if (!localStorage.getItem("upgradeBarKeys")) {
+            localStorage.setItem("upgradeBarKeys", JSON.stringify(Object.keys(this.upgradeBars)));
+        }
+        
+        // Retrieve full list of upgradeBar keys from localStorage
+        const storedKeys = JSON.parse(localStorage.getItem("upgradeBarKeys") || "[]");
+        
+        // Check if any stored keys are missing from current upgradeBars
+        for (const key of storedKeys) {
+            if (!this.upgradeBars[key]) {
+                const saved = JSON.parse(localStorage.getItem(key));
+        
+                const newBar = new GatherBar(this, key, 40, 100, 5, up1_desc);
+                this.scrollBox.addElement(newBar.container);
+                this.upgradeBars[key] = newBar;
+            }
+        }
+
         // CRAFT
         this.craftScroll = new ScrollingBox(this, 0, 0, this.scale.width, this.scale.height, "", {
             bgColor: 0x000000,  // Dark gray background for testing
@@ -213,7 +176,7 @@ console.log(test);
         
         layout.addToTabPage('Craft', this.craftScroll.container);
 
-        this.craftdBoxes = new TiledBoxes(this, 0, 0);
+        this.craftdBoxes = new Craft(this, 0, 0);
         this.craftScroll.addElement(this.craftdBoxes.container);
 
         // UPGRADE
@@ -229,20 +192,15 @@ console.log(test);
         this.upgrade = new ShowUpgradeOpts(this, 0, 0);
         this.upgradeScroll.addElement(this.upgrade.container);
 
-loadUpgradeBars(this);
-this.gatherBar.checkUpgradeAvailability();
-this.gatherBar2.checkUpgradeAvailability();
-this.gatherBar3.checkUpgradeAvailability();
-this.inventory.updateInventory();
-
-        // tests
-        //const NEWgatherBar = new GatherBar(this, 'NEW TEST', 40, 100, 5); // Set y=0 for stacking
-        //this.scrollBox.replaceElement(gatherBar2.container, NEWgatherBar.container);
-
-        //this.scrollBox.removeElement(gatherBar2.container);
-        
-        //const textBox2 = this.add.text(5, 5, 'UPGRADE', {});
-        //layout.addToTabPage('Upgrade', textBox2);
+        // For proper order of operations
+        loadUpgradeBars(this);
+        // Check upgrade eligibility now
+        for (const key of storedKeys) {
+            if (this.upgradeBars[key]) {
+                this.upgradeBars[key].checkUpgradeAvailability();
+            }
+        }
+         this.inventory.updateInventory();
     }
 
     createUI() {
@@ -278,7 +236,7 @@ export function loadGatherCounts() {
   }
 }
 
-export function loadUpgradeBars(scene) {
+export function loadUpgradeBars(scene, checkUpgrade = false) {
   const savedKeys = JSON.parse(localStorage.getItem("upgradeBarKeys"));
   const up1_desc = 'Reduces gather points by 1.';
   if (savedKeys) {

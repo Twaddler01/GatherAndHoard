@@ -1,6 +1,6 @@
 ## WIP
 
-- Branch: LS Update (Add LocalStorage
+- Branch: LS Update (Add LocalStorage)
 - BUG: Spacing on click of "Gather" sometimes appears at top of "Gather" tab
 - Working on LocalStorage. Need to add/fix auto gather vars.
 - GatherBar needs some reworkimg.

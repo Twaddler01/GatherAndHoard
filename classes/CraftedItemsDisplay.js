@@ -8,7 +8,7 @@ export default class CraftedItemsDisplay {
         this.craftData = craftData;
 
         this.textObjects = {};
-        this.container = scene.add.container(0, 0);
+        this.container = scene.add.container(x, y);
 
         this.setupDisplay();
     }
@@ -29,8 +29,9 @@ export default class CraftedItemsDisplay {
             if (!data.effect) return;
 
             data.effect.forEach(effect => {
-                if (effect.amt > 0) {
-                    const idText = this.scene.add.text(col1X, offsetY, data.name || `ID ${data.num}`, {
+                if (effect) { // > 0
+                console.log(effect.id + ' / ' + effect.amt);
+                    const idText = this.scene.add.text(col1X, offsetY, `${data.title}`, {
                         font: '16px Arial',
                         color: '#ccc'
                     });
@@ -53,14 +54,21 @@ export default class CraftedItemsDisplay {
     }
 
     updateCraftedItems() {
-        this.craftData.forEach(data => {
-            if (!data.effect) return;
-
-            data.effect.forEach(effect => {
-                if (effect.amt > 0 && this.textObjects[data.num]) {
-                    this.textObjects[data.num].value.setText(`x${effect.amt}`);
-                }
-            });
+        const activeUpgrades = this.scene.craftBoxes.craftStore.getActiveUpgrades(this.craftData);
+        activeUpgrades.forEach(upg => {
+            console.log(`${upg.title} is active at level ${upg.amt}`);
         });
+
+        if (activeUpgrades) {
+            activeUpgrades.forEach(data => {
+                if (!data.effect) return;
+    
+                data.effect.forEach(effect => {
+                    if (effect.amt > 0 && this.textObjects[data.num]) {
+                        this.textObjects[data.num].value.setText(`x${effect.amt}`);
+                    }
+                });
+            });
+        }
     }
 }

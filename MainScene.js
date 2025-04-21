@@ -169,7 +169,7 @@ class MainScene extends Phaser.Scene {
 
         // CRAFT
         this.craftScroll = new ScrollingBox(this, 0, 0, this.scale.width, this.scale.height, "", {
-            startY: 100,
+            //startY: 100,
             bgColor: 0x000000,  // Dark gray background for testing
             fontFamily: 'Arial',
             fontSize: '18px',
@@ -183,7 +183,13 @@ class MainScene extends Phaser.Scene {
 
         this.craftBoxes = new Craft(this, 0, 0);
         this.craftScroll.addElement(this.craftBoxes.container);
+        
+        ////
+        this.craftedItemsDisplay.updateCraftedItems();
         //this.craftScroll.reflowElements(10, 100);
+        ////
+        //this.craftedItemsDisplay = new CraftedItemsDisplay(this, 0, 0);
+        //this.craftScroll.addElement(this.craftedItemsDisplay.container);
 
         // UPGRADE
         this.upgradeScroll = new ScrollingBox(this, 0, 0, this.scale.width, this.scale.height, "", {

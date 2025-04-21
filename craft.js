@@ -108,18 +108,18 @@ export default class Craft {
         this.spacingX = 170; // boxWidth +10
         this.spacingY = 170; // boxHeight + 10
 
-        this.inventoryContainer = scene.add.container(x, 0);
-        this.container = scene.add.container(x, 100);
+        //this.inventoryContainer = scene.add.container(x, y);
+        this.container = scene.add.container(x, y);
 
         this.setupStorage();
         this.setupBoxes();
 
-// DEBUG
+/* DEBUG
 const activeUpgrades = this.craftStore.getActiveUpgrades(craftData);
 activeUpgrades.forEach(upg => {
     console.log(`${upg.title} is active at level ${upg.amt}`);
 });
-
+*/
 
     }
 
@@ -158,7 +158,7 @@ activeUpgrades.forEach(upg => {
             });
         }
     }
-    
+
     setupBoxes() {
         this.container.removeAll(true); // clear and destroy existing buttons
 

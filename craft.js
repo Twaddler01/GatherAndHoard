@@ -1,70 +1,91 @@
-import GatherBar from './gatherBar.js'; 
-// For costs
+import GatherBar from './gatherBar.js';
+import CraftStorage from './classes/CraftStorage.js';
 import { gatherCounts } from './MainScene.js';
 
-// Data array
-export const dataArray = [
+export const craftData = [
     {
-        title: 'Pebbles Upgrade',
-        desc: 'Much larger than tiny pebbles.',
-        available: true,
+        num: 1,
+        id: 'craftAltar1',
+        title: 'Primitive Altar',
+        desc: 'Altars grant the ability to gain knowledge for research and advancement.',
+        //available: true,
         canBuy: false,
+        max: 1,
         requirements: [
-            { id: 'Pebbles', count: 5 }
-        ]
+            { id: 'Pebbles', count: 1 },
+        ],
+        effect: [
+            { id: '_autoKnowledge', amt: 0, text: '+1 Knowledge/s' }
+        ],
     },
     {
-        title: 'Rocks Upgrade',
-        desc: 'Solid and heavy.',
-        available: true,
+        num: 2,
+        id: 'craftShelter1',
+        title: 'Primitive Shelter',
+        desc: 'A place for security and rest.',
+        //available: true,
         canBuy: false,
+        max: 5,
         requirements: [
             { id: 'Rocks', count: 3 },
             { id: 'Pebbles', count: 5 },
             { id: 'Sticks', count: 3 },
-        ]
+        ],
+        effect: [
+            { id: '_addCitizen', amt: 0, text: '+1 Citizen' }
+        ],
     },
     {
-        title: 'Twigs Upgrade',
-        desc: 'More pokey.',
-        available: true,
+        num: 3,
+        id: 'craftStorage1',
+        title: 'Storage Hole',
+        desc: 'A place to put things.',
+        //available: true,
         canBuy: false,
+        max: 5,
         requirements: [
             { id: 'Twigs', count: 5 }
-        ]
+        ],
+        effect: [
+            { id: '_addStorage', amt: 0, text: 'Increases storage capacity by 2000.' }
+        ],
     },
     // duplicates
-        {
+    {
+        num: 4,
         title: 'Twigs Upgrade',
         desc: 'More pokey.',
-        available: true,
-        canBuy: false,
-        requirements: [
-            { id: 'Twigs', count: 5 }
-        ]
-    },
-        {
-        title: 'Twigs Upgrade',
-        desc: 'More pokey.',
-        available: true,
-        canBuy: false,
-        requirements: [
-            { id: 'Twigs', count: 5 }
-        ]
-    },
-        {
-        title: 'Twigs Upgrade',
-        desc: 'More pokey.',
-        available: true,
+        //available: true,
         canBuy: false,
         requirements: [
             { id: 'Twigs', count: 5 }
         ]
     },
     {
+        num: 5,
         title: 'Twigs Upgrade',
         desc: 'More pokey.',
-        available: true,
+        //available: true,
+        canBuy: false,
+        requirements: [
+            { id: 'Twigs', count: 5 }
+        ]
+    },
+    {
+        num: 6,
+        title: 'Twigs Upgrade',
+        desc: 'More pokey.',
+        //available: true,
+        canBuy: false,
+        requirements: [
+            { id: 'Twigs', count: 5 }
+        ]
+    },
+    {
+        num: 7,
+        title: 'Twigs Upgrade',
+        desc: 'More pokey.',
+        //available: true,
         canBuy: false,
         requirements: [
             { id: 'Twigs', count: 5 }
@@ -72,24 +93,33 @@ export const dataArray = [
     }
 ];
 
-// const tileBoxes = new TiledBoxes(this, 0, 0, tileData);
-
-export default class TiledBoxes {
-    constructor(scene, x, y, dataArray) {
+export default class Craft {
+    constructor(scene, x, y) {
         this.scene = scene;
 
         // Stored output manipulation
         this.tileButtons = {}; // Store buttons keyed by data id
         this.tileColor = {};
         this.tileColorCnt = {};
+        
+        this.upgradeStore = {};
 
         // Offset of each 'box'
         this.spacingX = 170; // boxWidth +10
         this.spacingY = 170; // boxHeight + 10
 
-        this.container = scene.add.container();
+        //this.inventoryContainer = scene.add.container(x, y);
+        this.container = scene.add.container(x, y);
 
+        this.setupStorage();
         this.setupBoxes();
+
+/* DEBUG
+const activeUpgrades = this.craftStore.getActiveUpgrades(craftData);
+activeUpgrades.forEach(upg => {
+    console.log(`${upg.title} is active at level ${upg.amt}`);
+});
+*/
 
     }
 
@@ -101,9 +131,38 @@ export default class TiledBoxes {
         return this.tileColor[id];
     }
     
+    setupStorage() {
+        this.craftStore = new CraftStorage();
+    
+        const loaded = Object.keys(this.craftStore.getAll()).length > 0;
+    
+        // If there is no saved data, create new entries based on craftData
+        if (!loaded) {
+            craftData.forEach(data => {
+                if (data.effect) {
+                    this.craftStore.setUpgrade(data.num, 0); // initial amt
+                }
+            });
+            this.craftStore.save(); // Save initial state
+        } else {
+            // Load values from storage into craftData
+            console.log(JSON.stringify(craftData));
+            craftData.forEach(data => {
+                if (this.craftStore.hasUpgrade(data.num)) {
+                    const amt = this.craftStore.getUpgrade(data.num);
+                    if (data.effect) {
+                        data.effect.forEach(eff => {
+                            eff.amt = amt;
+                        });
+                    }
+                }
+            });
+        }
+    }
+
     setupBoxes() {
         this.container.removeAll(true); // clear and destroy existing buttons
-    
+
         const availableWidth = this.scene.scale.width; // or a fixed width container if you're using one
         const boxWidth = 160;
         const addedBoxHeight = 30; // Extra height above square (boxWidth)
@@ -113,9 +172,9 @@ export default class TiledBoxes {
         const maxCols = Math.floor((availableWidth - 20) / totalBoxWidth); // 20 is left margin
         let visibleIndex = 0;
     
-        dataArray.forEach((data) => {
-            if (!data.available) return;
-    
+        craftData.forEach((data) => {
+            if (this.craftStore.isHidden(data.num, data.max)) return;
+
             const bg = this.scene.add.rectangle(-10, -20, boxWidth, boxWidth + addedBoxHeight, 0x000000).setOrigin(0);
     
             const box = this.scene.add.container(0, -10);
@@ -128,7 +187,7 @@ export default class TiledBoxes {
     
             let costYOffset = 20;
     
-            const tileBtn = this.scene.add.text(0, costYOffset, 'Action', {
+            const tileBtn = this.scene.add.text(0, costYOffset, 'Craft', {
                 font: '20px Arial',
                 backgroundColor: '#333',
                 color: '#fff',
@@ -142,15 +201,23 @@ export default class TiledBoxes {
                             console.log('Action ready...');
                             // Action
                             gatherCounts[req.id] -= req.count;
-                            box.destroy();
-                            data.available = false;
-                            this.setupBoxes();
-                            this.scene.inventory.updateInventory();
-                            Object.values(this.scene.upgradeBars).forEach(bar => {
-                                bar.checkUpgradeAvailability();
-                            });
                         }
                     });
+
+                    // Storage
+                    if (data.effect) {
+                        data.effect.forEach(effect => {
+                            effect.amt += 1;
+                            this.craftStore.setUpgrade(data.num, effect.amt);
+                        });
+                    }
+                    box.destroy();
+                    this.setupBoxes();
+                    this.scene.inventory.updateInventory();
+                    Object.values(this.scene.upgradeBars).forEach(bar => {
+                        bar.checkUpgradeAvailability();
+                    });
+                    this.scene.craftedItemsDisplay.updateCraftedItems();
                 } else {
                     console.log('Not enough materials...');
                 }
@@ -198,48 +265,12 @@ export default class TiledBoxes {
             this.container.add(box);
             visibleIndex++;
         });
+        
+        //this.scene.craftedItemsDisplay.updateCraftedItems();
     }
 
     removeBox(box) {
-        box.available = false;
+        //box.available = false;
         this.setupBoxes();
     }
 }
-
-/*
-// Craft tab availability
-dataArray
-.filter(craft => craft.available)
-.forEach(craft => {
-    const craftBtn = this.scene.craftdBoxes.getTileButton(craft.title);
-    const craftReqLabel = this.scene.craftdBoxes.getTileColor(craft.title + '_lbl');
-
-    if (craftBtn) {
-        let allMet = true;
-
-        craft.requirements.forEach((req, i) => {
-            const reqKey = `${req.id}_req_${i}`;
-            const costText = this.scene.craftdBoxes.getTileColor(reqKey);
-            const currentCount = gatherCounts[req.id] || 0;
-
-            if (currentCount >= req.count) { // TEST req.count <> 10
-                costText.setColor('#2ecc71');
-            } else {
-                costText.setColor('red');
-                allMet = false;
-            }
-        });
-
-        if (allMet) {
-            craftBtn.setBackgroundColor('#2ecc71');
-            if (craftReqLabel) craftReqLabel.setColor('#2ecc71');
-            // Main trigger
-            craft.canBuy = true;
-        } else {
-            craftBtn.setBackgroundColor('#333');
-            if (craftReqLabel) craftReqLabel.setColor('red');
-            craft.canBuy = false;
-        }
-    }
-});
-*/

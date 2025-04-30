@@ -146,6 +146,7 @@ activeUpgrades.forEach(upg => {
             this.craftStore.save(); // Save initial state
         } else {
             // Load values from storage into craftData
+            console.log(JSON.stringify(craftData));
             craftData.forEach(data => {
                 if (this.craftStore.hasUpgrade(data.num)) {
                     const amt = this.craftStore.getUpgrade(data.num);
@@ -200,22 +201,23 @@ activeUpgrades.forEach(upg => {
                             console.log('Action ready...');
                             // Action
                             gatherCounts[req.id] -= req.count;
-                            // Storage
-                            if (data.effect) {
-                                data.effect.forEach(effect => {
-                                    effect.amt += 1;
-                                    this.craftStore.setUpgrade(data.num, effect.amt);
-                                });
-                            }
-                            box.destroy();
-                            this.setupBoxes();
-                            this.scene.inventory.updateInventory();
-                            Object.values(this.scene.upgradeBars).forEach(bar => {
-                                bar.checkUpgradeAvailability();
-                            });
-                            this.scene.craftedItemsDisplay.updateCraftedItems();
                         }
                     });
+
+                    // Storage
+                    if (data.effect) {
+                        data.effect.forEach(effect => {
+                            effect.amt += 1;
+                            this.craftStore.setUpgrade(data.num, effect.amt);
+                        });
+                    }
+                    box.destroy();
+                    this.setupBoxes();
+                    this.scene.inventory.updateInventory();
+                    Object.values(this.scene.upgradeBars).forEach(bar => {
+                        bar.checkUpgradeAvailability();
+                    });
+                    this.scene.craftedItemsDisplay.updateCraftedItems();
                 } else {
                     console.log('Not enough materials...');
                 }
